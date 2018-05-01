@@ -42,6 +42,17 @@
       </Row>
 
       <Row class="margin-10">
+        <Col span="4">
+          <p class="input-text">热门类型</p>
+        </Col>
+        <Col span="10">
+          <Select v-model="formItem.recommendId" style="width:200px">
+              <Option v-for="item in bannerType" :value="item.value" :key="item.value">{{ item.label }}</Option>
+          </Select>
+        </Col>
+      </Row>
+
+      <Row class="margin-10">
           <Col span="4">
             <p class="input-text">主图</p>
           </Col>
@@ -273,6 +284,7 @@ export default{
   data(){
     return {
       formItem:{},
+      bannerType:[],
       longMedia:[],
       withMedia:[],
       token:'',
@@ -362,6 +374,7 @@ export default{
 
     this._getCategory();
     this._getGroup();
+    this._getBennerType();
   },
   methods:{
     _getToken(){
@@ -477,6 +490,7 @@ export default{
       params.append('content', this.formItem.content);
       params.append('types', this.formItem.types);
       params.append('displayOrder', this.formItem.displayOrder);
+      params.append('recommendId', this.formItem.recommendId);
 
       this.formItem.skuGroups.forEach((value,index)=>{
         params.append('cartForms['+index+'].skuId', value.id);
@@ -598,6 +612,21 @@ export default{
         this.formItem.skuGroups.push(value);
       });
       this.addGroupModal = false;
+    },
+    // 获取热门类型
+    _getBennerType(){
+      axios.get(URL+'bannerType/list').then(function(res){
+        var data = res.data.data;
+        for(var i = 0; i<data.length;i++){
+          this.bannerType.push({
+            label:data[i].title,
+            value:data[i].id
+          });
+        }
+
+      }.bind(this)).catch(function(error){
+        console.log(error);
+      });
     }
     
   },

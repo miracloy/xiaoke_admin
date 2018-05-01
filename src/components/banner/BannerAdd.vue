@@ -41,6 +41,17 @@
         </Col>
       </Row>
 
+      <Row class="margin-10">
+        <Col span="4">
+          <p class="input-text">热门类型</p>
+        </Col>
+        <Col span="10">
+          <Select v-model="formItem.recommendId" style="width:200px;">
+              <Option v-for="item in bannerType" :value="item.value" :key="item.value">{{ item.label }}</Option style="z-index:99999;">
+          </Select>
+        </Col>
+      </Row>
+
 
       <Row class="margin-10">
           <Col span="4">
@@ -282,7 +293,9 @@ export default{
         types:['1'],
         carts:[],
         displayOrder:0,
+        recommendId:''
       },
+      bannerType:[],
       longMedia:[],
       withMedia:[],
       token:'',
@@ -350,6 +363,7 @@ export default{
 
     this._getCategory();
     this._getGroup();
+    this._getBennerType();
     
   },
   methods:{
@@ -457,6 +471,7 @@ export default{
       params.append('content', this.formItem.content);
       params.append('types', this.formItem.types);
       params.append('displayOrder', this.formItem.displayOrder);
+      params.append('recommendId', this.formItem.recommendId);
 
       this.formItem.carts.forEach((value,index)=>{
         params.append('cartForms['+index+'].skuId', value.id);
@@ -578,13 +593,33 @@ export default{
         this.formItem.carts.push(value);
       });
       this.addGroupModal = false;
+    },
+    // 获取热门类型
+    _getBennerType(){
+      axios.get(URL+'bannerType/list').then(function(res){
+        var data = res.data.data;
+        this.formItem.recommendId = data[0].id;
+        for(var i = 0; i<data.length;i++){
+          this.bannerType.push({
+            label:data[i].title,
+            value:data[i].id
+          });
+        }
+
+      }.bind(this)).catch(function(error){
+        console.log(error);
+      });
     }
     
   },
 }
 </script>
+<style>
+.ivu-select-dropdown{
+  z-index: 99999;
+}
+</style>
 <style scoped>
-
 h3{
   background-color: #999;
   color: #fff;

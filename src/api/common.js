@@ -30,6 +30,14 @@ export function _timestrToHs(str){
         var time = H+':'+s;
         return time;
     }
+// 日期字符串转时间戳
+export function _strToTime(str){
+      var arr = str.split(',');
+      for(var i=0; i < arr.length; i++){
+        arr[i] = Date.parse(new Date(arr[i]));
+      }
+      return arr.join(',');
+    }
 function _timeFormat(d){
 	var newD = d.toString().length==1 ? '0'+d : d;
 	return newD;

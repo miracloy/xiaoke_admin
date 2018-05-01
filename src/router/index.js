@@ -170,6 +170,27 @@ const CompanyDetail = (resolve)=>{
   })
 }
 
+const Active = (resolve)=>{
+  import('@/components/active/Active.vue').then((module)=>{
+    resolve(module)
+  })
+}
+const ActiveLayout = (resolve)=>{
+  import('@/components/active/ActiveLayout.vue').then((module)=>{
+    resolve(module)
+  })
+}
+const GoodsChange = (resolve)=>{
+  import('@/components/active/GoodsChange.vue').then((module)=>{
+    resolve(module)
+  })
+}
+const SpecialGoods = (resolve)=>{
+  import('@/components/active/SpecialGoods.vue').then((module)=>{
+    resolve(module)
+  })
+}
+
 // const SettingLayout = (resolve)=>{
 //   import('@/components/setting/SettingLayout.vue').then((module)=>{
 //     resolve(module)
@@ -220,6 +241,11 @@ const BannerAdd = (resolve)=>{
 }
 const BannerUpdate = (resolve)=>{
   import('@/components/banner/BannerUpdate.vue').then((module)=>{
+    resolve(module)
+  })
+}
+const Hot = (resolve)=>{
+  import('@/components/banner/Hot.vue').then((module)=>{
     resolve(module)
   })
 }
@@ -514,7 +540,52 @@ const Router  = new VueRouter({
                 breadcrumb:'修改广告消息'
               },
               component:BannerUpdate
-            },      
+            },   
+            {
+              path:'hot',
+              meta:{
+                breadcrumb:'热门推荐类型'
+              },
+              component:Hot
+            },    
+          ] 
+        }
+      ]
+    },
+        {
+      path: '/active',
+      redirect: '/active/index',
+      component:Layout,
+      children:[
+        {
+          path:'index',
+          meta:{
+            breadcrumb:'特价活动专区'
+          },
+          redirect: '/active/index/index',
+          component:ActiveLayout,
+          children:[
+            {
+              path:'index',
+              meta:{
+                breadcrumb:'优惠券'
+              },
+              component:Active
+            },   
+            {
+              path:'goodschange',
+              meta:{
+                breadcrumb:'商品兑换'
+              },
+              component:GoodsChange
+            },   
+            {
+              path:'specialgoods',
+              meta:{
+                breadcrumb:'特价商品'
+              },
+              component:SpecialGoods
+            },   
           ] 
         }
       ]

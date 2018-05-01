@@ -7,7 +7,7 @@
     </Row>
 
     <Row class="margin-10">
-      <Col span="2" offset="20">
+      <Col span="2" offset="0">
         <div class="addBox">
           <Button type="info" icon="plus" ><router-link tag="span" to="/banner/index/add">新增广告消息</router-link></Button>
         </div>

@@ -18,7 +18,7 @@
             <p class="input-text">清单名称</p>
           </Col>
           <Col span="10">
-            <p><Input v-model="formItem.detaiListName" style="width: 300px"></Input></p>
+            <p><Input v-model="formItem.detailListName" style="width: 300px"></Input></p>
           </Col>
       </Row>
 
@@ -61,6 +61,49 @@
          </Col>
       </Row>
 
+      <Row class="margin-10">
+        <Col span="4">
+            <p class="input-text">配送日期</p>
+        </Col>
+        <Col span="10">
+            <p>
+               <DatePicker type="date" placeholder="Select date" style="width: 230px" @on-change="OrderDateChange"></DatePicker>
+            </p>
+        </Col>
+      </Row>
+
+      <Row class="margin-10">
+        <Col span="4">
+            <p class="input-text">配送时间</p>
+        </Col>
+        <Col span="10">
+            <p>
+              <TimePicker format="HH:mm" type="timerange" placement="bottom-end" placeholder="Select time" style="width: 230px" v-model="full_date"  @on-change="fullDateChange"></TimePicker>
+            </p>
+        </Col>
+      </Row>
+
+      <Row class="margin-10">
+          <Col span="4">
+            <p class="input-text">是否自动转成订单</p>
+          </Col>
+          <Col span="10">
+            <RadioGroup @on-change="intervalChange" v-model="interval">
+                <p class='margin-10'><Radio label="1"> 是</Radio> <InputNumber :max="30" :min="1" style="width:50px;" v-model="interval_H"></InputNumber>小时后自动转成订单</p>
+                <p class='margin-10'><Radio label="-1"> 否</Radio></p>
+                <p class='margin-10'><Radio label="0"> 立即转成订单</Radio></p>
+            </RadioGroup>
+          </Col>
+      </Row>
+
+      <Row class="margin-10">
+          <Col span="4">
+            <p class="input-text">任务描述</p>
+          </Col>
+          <Col span="10">
+            <p><Input v-model="formItem.remarks" style="width: 400px"></Input></p>
+          </Col>
+      </Row>
       
       <Row class="margin-10">
         <Col span="10" class="save">
@@ -163,7 +206,7 @@
                   <p class="margin-10" v-if="users.length==0">没有用户数据</p>
                   <table class="table">
                     <tr v-for="(v,i) in users">
-                      <td @click="chooseUser(i)" style="padding:10px 0;text-indent:15px;">{{v.username}}</td>
+                      <td @click="chooseUser(i)" style="padding:10px 0;text-indent:15px;">{{v.name}} / {{v.managerName}}</td>
                     </tr>
                     <tr>
                     	<td>
@@ -185,17 +228,22 @@
 <script type="text/javascript">
 import axios from 'axios'
 import {URL} from '@/api/config.js'
-import {_timestrToDate,_timestrToHs} from '@/api/common.js'
+import {_timestrToDate,_timestrToHs,_strToTime} from '@/api/common.js'
 import Vue from 'vue'
 export default{
   data(){
     return {
       formItem:{
-      	detaiListName:'',
+      	detailListName:'',
       	customerId:'',
       	customerName:'',
-      	carts:[]
+      	carts:[],
+        remarks:'',
+        startTs:'',
+        endTs:'',
+        deliveryDate:''
       },
+      full_date:'',
       users:[],
       u_total:0,
       u_current:1,
@@ -383,7 +431,7 @@ export default{
       this.total = sum;
     },
     save(){
-    	if(this.formItem.detaiListName==''){
+    	if(this.formItem.detailListName==''){
     		this.$Message.error('清单名不能为空');
     		return ;
     	} 
@@ -395,11 +443,22 @@ export default{
     		this.$Message.error('商品不能为空');
     		return ;
     	} 
+      // 转清单时间
+      if(this.interval == 1 ){
+        this.formItem.intervalInt = this.interval_H;
+      }
+      var id = this.$route.params.id;
+      var interval = this.formItem.intervalInt != null ? this.formItem.intervalInt : -1;
 
     	var params = new URLSearchParams();
 
-    	params.append('detaiListName', this.formItem.detaiListName);
-    	params.append('customerId', this.formItem.customerId);
+    	params.append('detailListName', this.formItem.detailListName);
+      params.append('customerId', this.formItem.customerId);
+      params.append('remarks', this.formItem.remarks);
+      params.append('startTs', this.formItem.startTs);
+      params.append('endTs', this.formItem.endTs);
+    	params.append('deliveryDate', _strToTime(this.formItem.deliveryDate));
+      params.append('interval', interval);
     	
     	this.formItem.carts.forEach((value,index)=>{
     	  params.append('skus['+index+'].skuId', value.id);
@@ -474,6 +533,17 @@ export default{
         console.log(error);
       });
     },
+    intervalChange(v){
+      this.formItem.intervalInt = v;
+    },
+    OrderDateChange(e){
+      this.formItem.deliveryDate = e;
+    },
+    fullDateChange(e){
+      this.formItem.startTs = e[0];
+      this.formItem.endTs = e[1];
+    },
+
   },
 }
 </script>
