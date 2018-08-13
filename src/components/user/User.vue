@@ -22,7 +22,7 @@
         </div>
       </Col>
     </Row>
-    
+
     <div class="layout-content-main">
      <Table stripe border highlight-row :columns="columns1" :data="data1" ></Table>
      <div style="margin: 10px;overflow: hidden">
@@ -37,7 +37,7 @@
         title="添加新用户"
         @on-ok="add"
         @on-cancel="addModal=false">
- 
+
         <Row>
           <Col span="6">
               <p class="margin-10">公司名称</p>
@@ -101,7 +101,7 @@
         title="用户修改"
         @on-ok="update"
         @on-cancel="updateModal=false">
-    
+
         <Row>
           <Col span="6">
               <p class="margin-10">公司名称</p>
@@ -293,7 +293,7 @@ export default {
                                  },
                                  on: {
                                      click: () => {
-                                        this.freez(params.index);                                         
+                                        this.freez(params.index);
                                      }
                                  }
                              }, statusName),
@@ -310,7 +310,7 @@ export default {
           this.$Message.error('登录超时,请重新登录');
           setTimeout(()=>{
             this.$router.replace('/login');
-          },2000); 
+          },2000);
         }
         return response;
       }.bind(this), function (error) {
@@ -419,7 +419,7 @@ export default {
       this.spin = true;
       axios.get(URL+'user/'+id).then(function(res){
         var data = res.data;
-        this.updateUser = data.data;        
+        this.updateUser = data.data;
         this.spin = false;
       }.bind(this)).catch(function(error){
         console.log(error);

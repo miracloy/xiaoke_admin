@@ -7,19 +7,27 @@
     </Row>
 
     <Row class="margin-10">
-      <Col span="2">
+
+      <Col span="12">
+        <div class="searchBox">
+          <Select v-model="category" style="width:70px" placeholder="类别">
+            <Option v-for="item in categoryList" :value="item.value" :key="item.label" >{{ item.label }}</Option>
+          </Select>
+          <Select v-model="status" style="width:70px" placeholder="状态">
+            <Option v-for="item in statusList" :value="item.value" :key="item.label" >{{ item.label }}</Option>
+          </Select>
+          <Input v-model="company" icon="ios-search" placeholder="供应商" style="width: 150px"></Input>
+          <Input v-model="searchStr" icon="ios-search" placeholder="商品名称" style="width: 150px"></Input>
+          <Button type="primary" @click="search">搜索</Button>
+        </div>
+      </Col>
+      <Col span="12">
         <div class="addBox">
           <Button type="info" icon="plus" ><router-link tag="span" to="/goods/index/add">添加</router-link></Button>
         </div>
       </Col>
-      <Col span="6" offset="16">
-        <div class="searchBox">
-          <Input v-model="searchStr" icon="ios-search" placeholder="名称/编号" style="width: 200px"></Input>
-          <Button type="primary" @click="search">搜索</Button>
-        </div>
-      </Col>
     </Row>
-    
+
     <div class="layout-content-main">
      <Table stripe border highlight-row :columns="columns1" :data="data1"></Table>
      <div style="margin: 10px;overflow: hidden">
@@ -52,6 +60,20 @@ export default {
       size:10,
       data1: [],
       categoryId:'',
+      category: '',
+      categoryList: [
+        {
+          label: '水果',
+          value: '水果'
+        }
+      ],
+      statusList: [
+        {
+          label: '上架',
+          value: '上架'
+        }
+      ],
+      company: '',
       columns1: [
                  {
                      title: '编号',
@@ -65,7 +87,7 @@ export default {
                         if(params.row.skuMedia.primary){
                           imgSrc = params.row.skuMedia.primary.url;
                         }
-                        
+
                         return h('Avatar',{
                                 props:{
                                   src:imgSrc,
@@ -182,7 +204,7 @@ export default {
           this.$Message.error('登录超时,请重新登录');
           setTimeout(()=>{
             this.$router.replace('/login');
-          },2000); 
+          },2000);
         }
         return response;
       }.bind(this), function (error) {

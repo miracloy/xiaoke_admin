@@ -5,7 +5,7 @@
 		        <Bread></Bread>
 		  </Col>
 		</Row>
-		
+
 		<Row>
 		  <Col span="22" offset="1">
 		  		<div class="img-box" v-for="v in data1" style="float:left;">
@@ -104,7 +104,7 @@ export default{
 			                           },
 			                           on: {
 			                               click: () => {
-			                                   
+
 			                               }
 			                           }
 			                       }, '删除'),
@@ -130,7 +130,7 @@ export default{
 		      this.$Message.error('登录超时,请重新登录');
 		      setTimeout(()=>{
 		        this.$router.replace('/login');
-		      },2000); 
+		      },2000);
 		    }
 		    return response;
 		  }.bind(this), function (error) {
@@ -171,6 +171,6 @@ export default{
 	}
 }
 </script>
-<style scoped>  
-	
+<style scoped>
+
 </style>

@@ -12,7 +12,7 @@
 	        <h3>添加商品</h3>
 	      </Col>
 	    </Row>
-      
+
       <Row class="margin-10">
         <Col span="4">
           <p class="input-text">类别</p>
@@ -116,7 +116,7 @@
             <Button type="primary" size="large" @click="save">保存</Button>
           </Col>
       </Row>
-      
+
       <Spin class="demo-spin-col" v-if="spin">
           <Icon type="load-c" size=25 class="demo-spin-icon-load"></Icon>
           <div>Loading</div>
@@ -173,7 +173,7 @@ export default{
           this.$Message.error('登录超时,请重新登录');
           setTimeout(()=>{
             this.$router.replace('/login');
-          },2000); 
+          },2000);
         }
         return response;
       }.bind(this), function (error) {
@@ -193,7 +193,7 @@ export default{
     });
 
     this._getCategory();
-    
+
   },
 	methods:{
     _getCategory(){
@@ -219,7 +219,7 @@ export default{
       }
 
       editor.customConfig.uploadImgHooks = {
-          // 如果服务器端返回的不是 {errno:0, data: [...]} 这种格式，可使用该配置
+          // 如果服务器端返回的不是 {errno:0, checkbalance: [...]} 这种格式，可使用该配置
           // （但是，服务器端返回的必须是一个 JSON 格式字符串！！！否则会报错）
           customInsert: function (insertImg, result, editor) {
               // 图片上传并返回结果，自定义插入图片的事件（而不是编辑器自动插入图片！！！）
@@ -230,7 +230,7 @@ export default{
               insertImg(url)
 
               // result 必须是一个 JSON 格式字符串！！！否则报错
-              // 
+              //
           }
       }
 
@@ -295,7 +295,7 @@ export default{
 
     }
 
-    
+
 	},
 }
 </script>

@@ -4,9 +4,9 @@
 		     <Menu mode="horizontal" theme="dark" active-name="0">
 		         <div class="layout-logo"><span class="logo">下午茶</span></div>
 		         <div class="layout-nav">
-		         	 <MenuItem name="0">
-		         	     <router-link tag="div" to="/index/welcome"><Icon type="home"></Icon> 欢迎页</router-link>
-		         	 </MenuItem>
+                 <MenuItem name="0">
+                     <router-link tag="div" to="/index/welcome"><Icon type="home"></Icon> 欢迎页</router-link>
+                 </MenuItem>
 		             <MenuItem name="1">
 		                 <router-link tag="div" to="/goods"><Icon type="ios-cart"></Icon> 商品</router-link>
 		             </MenuItem>
@@ -26,10 +26,13 @@
 		             	 <router-link tag="div" to="/banner"><Icon type="android-settings"></Icon> 广告消息</router-link>
 		             </MenuItem>
 		             <MenuItem name="7">
-		             	 <router-link tag="div" to="/active"><Icon type="card"></Icon> 特价活动专区</router-link>
-		             </MenuItem>
+                    <router-link tag="div" to="/active"><Icon type="card"></Icon> 特价活动专区</router-link>
+                  </MenuItem>
+                 <MenuItem name="8">
+                   <router-link tag="div" to="/checkbalance"><Icon type="ios-list"></Icon> 对账管理</router-link>
+                 </MenuItem>
 		         </div>
-		         <Button type="dashed" class="logout" @click="logout">退出登录</Button>	
+		         <Button type="dashed" class="logout" @click="logout">退出登录</Button>
 		         <Button type="dashed" class="logout" icon="person">{{admin}}</Button>
 		     </Menu>
 		     <router-view></router-view>
@@ -40,7 +43,7 @@
 	export default{
 		data(){
 			return{
-				
+
 			}
 		},
 		computed:{
@@ -119,6 +122,6 @@
 	}
 
 	.layout-nav{
-		width: 1000px;
+		width: 1300px;
 	}
 </style>

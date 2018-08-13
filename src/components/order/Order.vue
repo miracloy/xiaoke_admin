@@ -22,7 +22,7 @@
         </div>
       </Col>
     </Row>
-    
+
     <div class="layout-content-main">
      <Table stripe border highlight-row :columns="columns1" :data="data1" size="small" ref="table"></Table>
      <div style="margin: 10px;overflow: hidden">
@@ -36,7 +36,7 @@
         v-model="infoModal"
         title="订单详情"
         @on-cancel="infoModal=false" class="info">
- 
+
         <Row>
           <Col span="6">
               <p class="margin-10">订单名称</p>
@@ -116,7 +116,7 @@
           <Button type="primary" @click="print(info.id)">打印订单</Button>
         </div>
     </Modal>
-    
+
     <Modal v-model="delModal" width="360">
         <p slot="header" style="color:#f60;text-align:center">
             <Icon type="information-circled"></Icon>
@@ -241,7 +241,7 @@ export default {
                      			click:()=>{
                             this.showInfo(params.row.id);
                      			}
-                     		}	
+                     		}
                      	},'订单查看');
                      }
                  },
@@ -312,7 +312,7 @@ export default {
         this.$Message.error('登录超时,请重新登录');
         setTimeout(()=>{
           this.$router.replace('/login');
-        },2000); 
+        },2000);
       }
       var data = res.data.data;
       this.total = data.total;
@@ -391,6 +391,7 @@ export default {
         .then(function(res){
           var data = res.data;
           this.info =data.data;
+          debugger;
           this.info.deliveryDate = _timestrToDate(this.info.deliveryDate);
           this.spin = false;
           this.infoModal = true;

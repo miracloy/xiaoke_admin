@@ -249,6 +249,53 @@ const Hot = (resolve)=>{
     resolve(module)
   })
 }
+const DataLayout = (resolve)=>{
+  import('@/components/checkbalance/DataLayout.vue').then((module)=>{
+    resolve(module)
+  })
+}
+const ProductSale = (resolve)=>{
+  import('@/components/checkbalance/ProductSale.vue').then((module)=>{
+    resolve(module)
+  })
+}
+
+const addInput = (resolve)=>{
+  import('@/components/checkbalance/AddInput.vue').then((module)=>{
+    resolve(module)
+  })
+}
+
+const supplyCompany = (resolve)=>{
+  import('@/components/checkbalance/SupplyCompany.vue').then((module)=>{
+    resolve(module)
+  })
+}
+
+const wareHouseProduct = (resolve)=>{
+  import('@/components/checkbalance/WareHouseProduct.vue').then((module)=>{
+    resolve(module)
+  })
+}
+
+const repoInputDetail = (resolve)=>{
+  import('@/components/checkbalance/InputDetail.vue').then((module)=>{
+    resolve(module)
+  })
+}
+
+const inputDraft = (resolve)=>{
+  import('@/components/checkbalance/InputDraft.vue').then((module)=>{
+    resolve(module)
+  })
+}
+
+const inputDetailEdit = (resolve)=>{
+  import('@/components/checkbalance/InputDetailEdit.vue').then((module)=>{
+    resolve(module)
+  })
+}
+
 
 Vue.use(VueRouter);
 Vue.use(iView);
@@ -322,15 +369,15 @@ const Router  = new VueRouter({
                 breadcrumb:'商品类别'
               },
               component:SignGoods
-            },  
+            },
             {
               path:'spec',
               meta:{
                 breadcrumb:'商品规格'
               },
               component:Spec
-            }           
-          ] 
+            }
+          ]
         }
       ]
     },
@@ -353,8 +400,8 @@ const Router  = new VueRouter({
                 breadcrumb:'用户列表'
               },
               component:User
-            },            
-          ] 
+            },
+          ]
         }
       ]
     },
@@ -384,42 +431,42 @@ const Router  = new VueRouter({
                 breadcrumb:'商品组合'
               },
               component:BillNormal
-            }, 
+            },
             {
               path:'groupAdd',
               meta:{
                 breadcrumb:'添加商品组合'
               },
               component:BillGroupAdd
-            }, 
+            },
             {
               path:'groupUpdate/:id',
               meta:{
                 breadcrumb:'修改商品组合'
               },
               component:BillGroupUpdate
-            }, 
+            },
             {
               path:'add',
               meta:{
                 breadcrumb:'新增清单'
               },
               component:BillAdd
-            },    
+            },
             {
               path:'detail/:id',
               meta:{
                 breadcrumb:'清单详情'
               },
               component:BillDetail
-            },   
+            },
             {
               path:'update/:id',
               meta:{
                 breadcrumb:'清单修改'
               },
               component:BillUpdate
-            },  
+            },
             {
               path:'billpush',
               meta:{
@@ -433,8 +480,8 @@ const Router  = new VueRouter({
                 breadcrumb:'新建清单推送'
               },
               component:BillPushAdd
-            },     
-          ] 
+            },
+          ]
         }
       ]
     },
@@ -457,15 +504,15 @@ const Router  = new VueRouter({
                 breadcrumb:'订单列表'
               },
               component:Order
-            }, 
+            },
             {
               path:'stock',
               meta:{
                 breadcrumb:'采销货物统计'
               },
               component:Stock
-            },          
-          ] 
+            },
+          ]
         }
       ]
     },
@@ -495,15 +542,15 @@ const Router  = new VueRouter({
                 breadcrumb:'未结账期明细'
               },
               component:FinanceCompany
-            }, 
+            },
             {
               path:'company_detail',
               meta:{
                 breadcrumb:'公司账款明细详情'
               },
               component:CompanyDetail
-            },         
-          ] 
+            },
+          ]
         }
       ]
     },
@@ -526,33 +573,33 @@ const Router  = new VueRouter({
                 breadcrumb:'广告消息'
               },
               component:Banner
-            },   
+            },
             {
               path:'add',
               meta:{
                 breadcrumb:'添加广告消息'
               },
               component:BannerAdd
-            },   
+            },
             {
               path:'update/:id',
               meta:{
                 breadcrumb:'修改广告消息'
               },
               component:BannerUpdate
-            },   
+            },
             {
               path:'hot',
               meta:{
                 breadcrumb:'热门推荐类型'
               },
               component:Hot
-            },    
-          ] 
+            },
+          ]
         }
       ]
     },
-        {
+    {
       path: '/active',
       redirect: '/active/index',
       component:Layout,
@@ -571,22 +618,88 @@ const Router  = new VueRouter({
                 breadcrumb:'优惠券'
               },
               component:Active
-            },   
+            },
             {
               path:'goodschange',
               meta:{
                 breadcrumb:'商品兑换'
               },
               component:GoodsChange
-            },   
+            },
             {
               path:'specialgoods',
               meta:{
                 breadcrumb:'特价商品'
               },
               component:SpecialGoods
-            },   
-          ] 
+            },
+          ]
+        }
+      ]
+    },
+    {
+      path: '/checkbalance',
+      redirect: '/checkbalance/index',
+      component:Layout,
+      children:[
+        {
+          path:'index',
+          meta:{
+            breadcrumb:'对账'
+          },
+          redirect: '/checkbalance/index/index',
+          component:DataLayout,
+          children:[
+            {
+              path:'index',
+              meta:{
+                breadcrumb:'进货单-正式'
+              },
+              component:ProductSale
+            },
+            {
+              path:'addInput',
+              meta:{
+                breadcrumb:'新增进货单'
+              },
+              component:addInput
+            },
+            {
+              path:'supplyCompany',
+              meta:{
+                breadcrumb:'供应商'
+              },
+              component:supplyCompany
+            },
+            {
+              path:'wareHouseProduct',
+              meta:{
+                breadcrumb:'供应商xx'
+              },
+              component:wareHouseProduct
+            },
+            {
+              path:'detail',
+              meta:{
+                breadcrumb:'明细'
+              },
+              component:repoInputDetail
+            },
+            {
+              path:'inputDraft',
+              meta:{
+                breadcrumb:'进货单-草稿'
+              },
+              component:inputDraft
+            },
+            {
+              path:'inputDetailEdit',
+              meta:{
+                breadcrumb:'进货单-草稿修改'
+              },
+              component:inputDetailEdit
+            }
+          ]
         }
       ]
     },
@@ -609,8 +722,8 @@ const Router  = new VueRouter({
     //             breadcrumb:'系统设置'
     //           },
     //           component:Setting
-    //         },          
-    //       ] 
+    //         },
+    //       ]
     //     }
     //   ]
     // },

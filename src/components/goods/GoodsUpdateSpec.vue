@@ -13,8 +13,8 @@
               <Button type="primary" @click="goUpdateSpec" size="large">规格</Button>
         </Col>
       </Row>
-      
-     
+
+
       <Row>
         <Col span="8" offset="14">
           <Button type="info" @click="skuModal=true">添加sku</Button>
@@ -80,19 +80,19 @@
           @on-ok="add"
           @on-cancel="addModal=false"
           width="300">
-          
+
           <p v-for="(v,i) in specs" class="margin-10" style="font-size:14px;position:relative;">{{v.attributeName}} <Button size="small" icon="plus" style="position:absolute;right:0;top:0;" @click="add(i)"></Button></p>
 
           <div slot="footer"></div>
       </Modal>
-      
+
       <Modal
           v-model="skuModal"
           title="添加sku"
           @on-ok="addsku"
           @on-cancel="skuModal=false"
           width="1000">
-          
+
           <table class="table">
             <tr>
               <td>名称</td>
@@ -118,7 +118,7 @@
             </tr>
           </table>
 
-          
+
       </Modal>
 
       <Spin class="demo-spin-col" v-if="spin">
@@ -179,7 +179,7 @@ export default{
           this.$Message.error('登录超时,请重新登录');
           setTimeout(()=>{
             this.$router.replace('/login');
-          },2000); 
+          },2000);
         }
         return response;
       }.bind(this), function (error) {
@@ -254,6 +254,7 @@ export default{
       params.append('optionValue', this.sku.optionValue);
       params.append('price', this.sku.price);
       params.append('qtyAvailable', this.sku.qtyAvailable);
+      debugger;
       axios.post(URL+'product/add/'+id,params).then(function(res){
         if(res.data.errorCode!=200){
           this.$Message.error(res.data.moreInfo);

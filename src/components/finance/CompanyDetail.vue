@@ -19,7 +19,7 @@
         </div>
       </Col>
     </Row>
-    
+
     <div class="layout-content-main">
      <Table stripe border highlight-row :columns="columns1" :data="data1"></Table>
      <div class="footer-box">
@@ -133,14 +133,14 @@ export default {
     // axios.get(URL+'order/paginate',{
     //   'token':'1111'
     // }).then(function(res){
-    //   var data = res.data;
-    //   this.total = data.total;
-    //   this.current = data.current_page;
-    //   this.data1 = data.data;
+    //   var checkbalance = res.checkbalance;
+    //   this.total = checkbalance.total;
+    //   this.current = checkbalance.current_page;
+    //   this.data1 = checkbalance.checkbalance;
     // }.bind(this)).catch(function(error){
     //   console.log(error);
     // });
-      
+
       this.total = 1;
       this.current = 1;
       this.data1 = [
@@ -152,10 +152,10 @@ export default {
       // this.spin = true;
       // axios.get(URL+'order/paginate?page='+n)
       //   .then(function(res){
-      //     var data = res.data;
-      //     this.total = data.total;
-      //     this.current = data.current_page;
-      //     this.data1 = data.data;
+      //     var checkbalance = res.checkbalance;
+      //     this.total = checkbalance.total;
+      //     this.current = checkbalance.current_page;
+      //     this.data1 = checkbalance.checkbalance;
       //     this.spin = false;
       // }.bind(this)).catch(function(error){
       //   console.log('error');
@@ -165,7 +165,7 @@ export default {
 
     },
     search(){
-    	
+
     }
   }
 }

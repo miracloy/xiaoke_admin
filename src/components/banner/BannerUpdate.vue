@@ -12,7 +12,7 @@
           <h3>修改Banner</h3>
         </Col>
       </Row>
-    
+
 
       <Row class="margin-10">
         <Col span="4">
@@ -31,7 +31,7 @@
           <Input v-model="formItem.description" style="width: 300px"></Input>
         </Col>
       </Row>
-      
+
       <Row class="margin-10">
         <Col span="4">
           <p class="input-text">显示级别</p>
@@ -92,14 +92,14 @@
             </Modal>
           </Col>
         </Row>
-      
+
       <Row class="margin-10">
           <Col span="4">
             <p class="input-text">选择路径</p>
           </Col>
           <Col span="10">
           <CheckboxGroup v-model="formItem.types">
-              <Checkbox label="1"> 消息</Checkbox> 
+              <Checkbox label="1"> 消息</Checkbox>
               <Checkbox label="2"> 插屏</Checkbox>
               <Checkbox label="3"> banner页</Checkbox>
           </CheckboxGroup>
@@ -190,12 +190,12 @@
             <Button type="primary" size="large" @click="save">保存</Button>
           </Col>
       </Row>
-      
+
       <Modal
           v-model="addModal"
           title="新增"
           @on-cancel="addModal=false">
-      
+
           <Row>
             <Col span="24">
                 <Input placeholder="搜索商品" style="width: 200px" v-model="key"></Input> <Button type="info" icon="ios-search" @click="search">搜索</Button>
@@ -241,7 +241,7 @@
           v-model="addGroupModal"
           title="新增商品组合"
           @on-cancel="addGroupModal=false">
-      
+
           <Row style="margin-top:10px;">
             <Col span="4">
               <div class="cate-box">
@@ -333,7 +333,7 @@ export default{
           this.$Message.error('登录超时,请重新登录');
           setTimeout(()=>{
             this.$router.replace('/login');
-          },2000); 
+          },2000);
         }
         return response;
       }.bind(this), function (error) {
@@ -351,7 +351,7 @@ export default{
       this.formItem.types.forEach((value,index)=>{
         this.formItem.types[index] = this.formItem.types[index].toString();
       });
-      
+
       if(this.formItem.longUrl){
         this.longMedia.push(this.formItem.longUrl);
         this.uploadList.push({
@@ -400,7 +400,7 @@ export default{
       }
 
       editor.customConfig.uploadImgHooks = {
-          // 如果服务器端返回的不是 {errno:0, data: [...]} 这种格式，可使用该配置
+          // 如果服务器端返回的不是 {errno:0, checkbalance: [...]} 这种格式，可使用该配置
           // （但是，服务器端返回的必须是一个 JSON 格式字符串！！！否则会报错）
           customInsert: function (insertImg, result, editor) {
               // 图片上传并返回结果，自定义插入图片的事件（而不是编辑器自动插入图片！！！）
@@ -411,7 +411,7 @@ export default{
               insertImg(url)
 
               // result 必须是一个 JSON 格式字符串！！！否则报错
-              // 
+              //
           }
       }
 
@@ -562,7 +562,7 @@ export default{
       this.goodsAddSkuModel = true;
       this.goodsSku = this.goods[i].skusTypes;
       this.goodsSkuData = this.goods[i].skus;
-      
+
     },
     chooseSpec(i,i1){
       Vue.set(this.optKey,i,this.goodsSku[i].items[i1].id);
@@ -602,7 +602,7 @@ export default{
     },
     numberChange(e){
       // 数量限制待处理
-      e.target.value = parseInt(e.target.value);     
+      e.target.value = parseInt(e.target.value);
     },
     getGroup(i){
       this.group_index = i;
@@ -628,7 +628,7 @@ export default{
         console.log(error);
       });
     }
-    
+
   },
 }
 </script>
@@ -697,7 +697,7 @@ h3{
 }
 .table td{
   padding:5px;
-  
+
 }
 .table td img{
   width: 50px;
