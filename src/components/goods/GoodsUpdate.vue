@@ -19,8 +19,9 @@
           <p class="input-text">类别</p>
         </Col>
         <Col span="16">
-          <Select v-model="formItem.categoryId" style="width:200px">
-              <Option v-for="item in categorys" :value="item.id" :key="item.id">{{ item.name }}</Option>
+          <Tag v-if="showTag" closable @on-close="handleClose">{{this.formItem.categoryName}}</Tag>
+          <Select v-if="!showTag" v-model="formItem.categoryId" style="width:200px">
+                <Option v-for="item in categorys" :value="item.id" :key="item.name">{{ item.name }}</Option>
           </Select>
         </Col>
       </Row>
@@ -32,7 +33,18 @@
           <Col span="10">
             <Input v-model="formItem.name" style="width: 300px"></Input>
           </Col>
-        </Row>
+      </Row>
+      <Row class="margin-10">
+        <Col span="4">
+        <p class="input-text">供应商</p>
+        </Col>
+        <Col span="10">
+          <Tag v-if="showTagCompany" closable @on-close="handleCloseCompany">{{this.formItem.companyName}}</Tag>
+          <Select v-if="!showTagCompany" filterable clearable v-model="formItem.companyId" placeholder="供应商选择" style="width:240px;" >
+            <Option v-for="item in companyList" :value="item.value" :key="item.label">{{item.label}}</Option>
+          </Select>
+        </Col>
+      </Row>
 
       <Row class="margin-10">
           <Col span="4">
@@ -76,23 +88,71 @@
           </Col>
         </Row>
 
-        <Row class="margin-10">
-          <Col span="4">
-            <p class="input-text">库存</p>
-          </Col>
-          <Col span="10">
-            <InputNumber :max="100000" :min="0" v-model="formItem.quantityAvailable" style="width: 200px"></InputNumber>
-          </Col>
-        </Row>
+   <!-- <Row class="margin-10">
+      <Col span="4">
+      <p class="input-text">库存</p>
+      </Col>
+      <Col span="10">
+      <InputNumber :max="100000" :min="0" v-model="formItem.qtyAvailable" style="width: 200px"></InputNumber>
+      </Col>
+    </Row>-->
 
-      <Row class="margin-10">
-          <Col span="4">
-            <p class="input-text">价格</p>
-          </Col>
-          <Col span="10">
-            <Input v-model="formItem.minPrice" style="width: 300px"></Input>
-          </Col>
-        </Row>
+    <!--<Row class="margin-10">
+      <Col span="4">
+      <p class="input-text">售价</p>
+      </Col>
+      <Col span="10">
+      <InputNumber :max="100000" :min="0" v-model="formItem.price" style="width: 200px"></InputNumber>元
+      </Col>
+    </Row>
+
+    <Row class="margin-10">
+      <Col span="4">
+      <p class="input-text">进货价</p>
+      </Col>
+      <Col span="10">
+      <InputNumber :max="100000" :min="0" v-model="formItem.cost" style="width: 200px"></InputNumber>元
+      </Col>
+    </Row>-->
+
+    <Row class="margin-10">
+      <Col span="4">
+      <p class="input-text">下单要求</p>
+      </Col>
+      <Col span="10">
+      <Input v-model="formItem.orderRule" style="width: 300px"></Input>
+      </Col>
+    </Row>
+
+    <Row class="margin-10">
+      <Col span="4">
+      <p class="input-text">供应需求</p>
+      </Col>
+      <Col span="10">
+      <Input v-model="formItem.supplyRule" style="width: 300px"></Input>
+      </Col>
+    </Row>
+
+    <Row class="margin-10">
+      <Col span="4">
+      <p class="input-text">发票类型</p>
+      </Col>
+      <Col span="10">
+      <Select v-model="formItem.invoice" style="width:100px" placeholder="选择发票">
+        <Option v-for="item in invoiceList" :value="item.value" :key="item.label" >{{ item.label }}</Option>
+      </Select>
+      </Col>
+    </Row>
+
+    <Row class="margin-10">
+      <Col span="4">
+      <p class="input-text">排序</p>
+      </Col>
+      <Col span="10">
+      <InputNumber :max="100000" :min="0" :precision="0" v-model="formItem.orderNumber" style="width: 80px"></InputNumber>
+      </Col>
+    </Row>
+
 
       <Row class="margin-10">
           <Col span="4">
@@ -116,12 +176,14 @@
           <Col span="10" class="save">
             <Button type="primary" size="large" @click="updateSave">保存</Button>
           </Col>
+        <Col span="2"><Button type="default" shape="circle" @click="back()">返回</Button></Col>
       </Row>
 
       <Spin class="demo-spin-col" v-if="spin">
           <Icon type="load-c" size=25 class="demo-spin-icon-load"></Icon>
           <div>Loading</div>
       </Spin>
+
 
 	</div>
 </template>
@@ -134,13 +196,19 @@ import E from 'wangeditor'
 export default{
 	data(){
 		return {
-      formItem:{},
+      showTag: true,
+      showTagCompany: true,
+      formItem:{
+        categoryId:'',
+        orderNumber: 0,
+      },
 			sku:{
         name:'',
         price:0,
         qtyAvailable:0,
         optionValue:[],
       },
+      companyList: [],
       addModal:false,
       skuModal:false,
       specs:[],
@@ -149,10 +217,74 @@ export default{
       imgName: '',
       visible: false,
       uploadList: [],
-      token:'',
       categorys:[],
       spin:false,
       specValues:[],
+      choose_company:[
+        {
+          title: '操作',
+          key: 'c',
+          render:(h,params)=>{
+            return h('Button',{
+              props:{
+                type:'info',
+                size:'small'
+              },
+              on:{
+                click:()=>{
+                  this.setcompanytoInput(params.row);
+                }
+              }
+            },'选择');
+          }
+        },
+        {
+          title: '编号',
+          key: 'id'
+        },
+        {
+          title: '商家名称',
+          key: 'companyName'
+        },
+        {
+          title: '联系人',
+          key: 'managerName'
+        },
+        {
+          title: '联系方式',
+          key: 'phoneNumber'
+        },
+        {
+          title: '税号',
+          key: 'taxNumber'
+        },
+        {
+          title: '发票抬头',
+          key: 'title'
+        }
+
+      ],
+      company_total:0,
+      company_size:5,
+      company_current:1,
+      company_key: '',
+      current: '',
+      currentCategoryId: '',
+      currentCategoryName: '',
+      currentCompanyId: '',
+      currentCompanyName: '',
+      data1: [],
+      invoiceList: [
+        {
+          label: '普票',
+          value: '普票'
+        },
+        {
+          label: '专票',
+          value: '专票'
+        }
+
+      ],
 		}
 	},
   computed:{
@@ -163,7 +295,14 @@ export default{
     }
   },
   mounted(){
-    var id = this.$route.params.id;
+    this.id = this.$route.params.id; // 商品 id
+    var id = this.id;
+    this.current = this.$route.query.current; //修改前页面
+    this.currentCategoryId = this.$route.query.currentCategoryId; //当前商品的类目id
+    this.currentCategoryName = this.$route.query.currentCategoryName;//当前商品的类目名称
+    this.currentCompanyId = this.$route.query.currentCompanyId; //当前供应商的id
+    this.currentCompanyName = this.$route.query.currentCompanyName;//当前供应商的名称
+
     this.uploadList = this.$refs.upload.fileList;
     // 添加响应拦截器
     axios.interceptors.request.use(function (config) {
@@ -190,6 +329,11 @@ export default{
     axios.get(URL+'product/'+id).then(function(res){
       var data = res.data;
       this.formItem = data.data;
+      if (!this.formItem.companyId ) {
+        this.showTagCompany = false;
+      }else{
+
+      }
       this.formItem.imgs.forEach(function(v,i){
         this.uploadList.push({
           url:v,
@@ -197,14 +341,15 @@ export default{
         });
       }.bind(this));
 
-
+      this._getCategory(this.formItem.categoryId);
+      this.getCompanyList(this.formItem.companyId);
       this._getToken();
 
     }.bind(this)).catch(function(error){
       console.log(error);
     });
 
-    this._getCategory();
+
 
     axios.get(URL+'product/option/'+id).then(function(res){
       var data = res.data;
@@ -215,6 +360,27 @@ export default{
 
   },
 	methods:{
+    getCompanyList(cid){
+      axios.get(URL+'company/getSimpleCompanies',{
+        params:{
+          type: 'SUPPLY'
+        }
+      }).then(function(res){
+        var datas = res.data.data;
+        var list = new Array();
+        datas.forEach(function(v,i,datas){
+          var o = {
+            label: v.companyName + ' ' + v.managerName,
+            value: v.id
+          };
+          list.push(o);
+        });
+        this.companyList = list;
+        this.formItem.companyId = cid;
+      }.bind(this)).catch(function(error){
+        console.log(error);
+      });
+    },
     add(i){
       var id = this.specs[i].id;
 
@@ -246,10 +412,26 @@ export default{
         console.log(error);
       });
     },
-    _getCategory(){
+    _getCategory(cid){
       axios.get(URL+'category').then(function(res){
-        var data = res.data;
-        this.categorys = data.data;
+        var cs = res.data.data;
+        var categorysList = [];
+        cs.forEach((value,index)=>{
+          let o = {
+            id: value.id,
+            name: value.name
+          };
+          categorysList.push(o);
+
+        });
+        this.categorys = categorysList;
+        this.categorys.forEach((value, index)=>{
+          if (value.id == cid){
+            this.formItem.categoryName = value.name;
+            return
+          }
+        });
+          //setTimeout(function(){this.xxx(cid);}.bind(this),1000);
       }.bind(this)).catch(function(error){
         console.log(error);
       });
@@ -325,6 +507,15 @@ export default{
     },
 
     updateSave(){
+      if (this.formItem.categoryId == ''){
+        this.$Message.error('请选择商品分类');
+        return
+      }
+      if (this.formItem.companyId == ''){
+        this.$Message.error('请选择供应商');
+        return
+      }
+
       var id = this.$route.params.id;
       console.log(this.uploadList);
       var imgs = [];
@@ -340,12 +531,29 @@ export default{
       params.append('categoryId', this.formItem.categoryId);
       params.append('qtyAvailable', this.formItem.quantityAvailable);
       params.append('longDescription', this.formItem.longDescription);
+
+      params.append('orderRule', this.formItem.orderRule);
+      params.append('supplyRule', this.formItem.supplyRule);
+      params.append('invoice', this.formItem.invoice);
+      params.append('orderNumber', this.formItem.orderNumber);
+      params.append('companyId', this.formItem.companyId);
+
       axios.post(URL+'product/'+id,params).then(function(res){
         if(res.data.errorCode!=200){
           this.$Message.error(res.data.moreInfo);
         }else{
          this.$Message.success('保存成功');
-         this.$router.go(-1);
+          //this.$router.go(-1);
+          this.$router.push({
+            path: '/goods/index/index/',
+            query:{
+              current: this.current,
+              currentCategoryId: this.currentCategoryId,
+              currentCategoryName: this.currentCategoryName,
+              currentCompanyId: this.currentCompanyId,
+              currentCompanyName: this.currentCompanyName,
+            },
+          });
         }
 
       }.bind(this)).catch(function(error){
@@ -354,13 +562,53 @@ export default{
     },
 
     goUpdateSpec(){
-      this.$router.push('/goods/index/updateSpec/'+this.$route.params.id);
+      this.$router.push({
+        path: '/goods/index/updateSpec/'+this.id,
+        query:{
+          current: this.current,
+          currentCategoryId: this.currentCategoryId,
+          currentCategoryName: this.currentCategoryName,
+          currentCompanyId: this.currentCompanyId,
+          currentCompanyName: this.currentCompanyName,
+        },
+      });
     },
     goUpdateBase(){
-      this.$router.push('/goods/index/update/'+this.$route.params.id);
+      this.$router.push({
+        path: '/goods/index/update/'+this.id,
+        query:{
+          current: this.current,
+          currentCategoryId: this.currentCategoryId,
+          currentCategoryName: this.currentCategoryName,
+          currentCompanyId: this.currentCompanyId,
+          currentCompanyName: this.currentCompanyName,
+        },
+      });
+    },
+    // 返回
+    back(){
+      this.$router.push({
+        path: '/goods/index/index/',
+        query:{
+          current: this.current,
+          currentCategoryId: this.currentCategoryId,
+          currentCategoryName: this.currentCategoryName,
+          currentCompanyId: this.currentCompanyId,
+          currentCompanyName: this.currentCompanyName,
+        },
+      });
+    },
+    handleClose(){
+      this.showTag = false;
+      this.formItem.categoryId = '';
+      this.formItem.categoryName = '';
+    },
+
+    handleCloseCompany(){
+      this.showTagCompany = false;
+      this.formItem.companyId = '';
+      this.formItem.companyName = '';
     }
-
-
 	},
 
 

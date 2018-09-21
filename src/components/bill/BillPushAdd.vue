@@ -37,10 +37,27 @@
             <p class="input-text">清单所含商品</p>
           </Col>
          <Col span="10">
-             <table class="table">
+             <table class="table" style="width: 1000px;">
+               <tr>
+                 <td>图片</td>
+                 <td>名称</td>
+                 <td>供应商</td>
+                 <td>发票</td>
+                 <td>下单需求</td>
+                 <td>供应需求</td>
+                 <td>规格</td>
+                 <td>数量</td>
+                 <td>单价</td>
+
+               </tr>
                <tr v-for="(v,i) in formItem.carts">
                  <td><img v-if="v.skuMedia.primary" :src="v.skuMedia.primary.url" style="height:40px;"></td>
                  <td>{{v.name}}</td>
+                 <td>{{v.companyName}}</td>
+                 <td>{{v.invoice}}</td>
+                 <td>{{v.orderRule}}</td>
+                 <td>{{v.supplyRule}}</td>
+
                  <td>
                    <span v-for="v1 in v.productOption">{{v1.attributeValue}}</span>
                  </td>
@@ -84,6 +101,21 @@
       </Row>
 
       <Row class="margin-10">
+        <Col span="4">
+        <p class="input-text">配送地址</p>
+        </Col>
+        <Col span="10">
+<!--
+          <p><Input v-model="formItem.address" style="width: 1000px"></Input></p>
+-->
+        <Select v-model="formItem.addressId" style="width:200px">
+          <Option v-for="item in addressList" :value="item.id" :key="item.id">{{ item.addressLine }}</Option>
+        </Select>
+        <Button icon="ios-add-circle-outline" @click="addnewAddress">新增</Button>
+        </Col>
+      </Row>
+
+      <Row class="margin-10">
           <Col span="4">
             <p class="input-text">是否自动转成订单</p>
           </Col>
@@ -96,15 +128,46 @@
           </Col>
       </Row>
 
+
+
       <Row class="margin-10">
           <Col span="4">
             <p class="input-text">任务描述</p>
           </Col>
           <Col span="10">
-            <p><Input v-model="formItem.remarks" style="width: 400px"></Input></p>
+            <p><Input v-model="formItem.describe" style="width: 400px"></Input></p>
           </Col>
       </Row>
-      
+
+      <Row class="margin-10">
+        <Col span="4">
+        <p class="input-text">结款方式</p>
+        </Col>
+        <Col span="10">
+          <Select v-model="formItem.payMethod" style="width:200px">
+            <Option v-for="item in payMethodList" :value="item.value" :key="item.value">{{ item.label }}</Option>
+          </Select>
+        </Col>
+      </Row>
+
+      <Row class="margin-10">
+        <Col span="4">
+        <p class="input-text">开票信息</p>
+        </Col>
+        <Col span="10">
+          <Select multiple v-model="formItem.invoiceIds" style="width:800px" aria-readonly="true" placeholder="选择发票">
+            <Option v-for="item in titleList" :value="item.id" :key="item.title" >{{ item.title }}</Option>
+          </Select>
+        </Col>
+      </Row>
+      <Row class="margin-10">
+        <Col span="4">
+        <p class="input-text">备注</p>
+        </Col>
+        <Col span="10">
+        <p><Input v-model="formItem.remarks" style="width: 400px"></Input></p>
+        </Col>
+      </Row>
       <Row class="margin-10">
         <Col span="10" class="save">
           <Button type="primary" size="large" @click="save">保存</Button>
@@ -115,6 +178,7 @@
       <Modal
           v-model="addModal"
           title="新增"
+          width="1200px"
           @on-cancel="addModal=false">
       
           <Row>
@@ -133,8 +197,13 @@
                   <p class="margin-10" v-if="goods.length==0">没有商品数据</p>
                   <table class="table">
                     <tr v-for="(v,i) in goods">
+<!--
                       <td><img v-if="v.skuMedia.alt1" :src="v.skuMedia.alt1.url" height="40"></td>
+-->
+                      <td><img v-if="v.skuMedia.primary" :src="v.skuMedia.primary.url" height="40"></td>
                       <td>{{v.name}}</td>
+                      <td>{{v.companyName}}</td>
+                      <td>{{v.invoice}}</td>
                       <td>￥{{v.minPrice}}</td>
                       <td><Button type="info" size="small" @click="goodsAddSku(i)">添加</Button></td>
                     </tr>
@@ -205,8 +274,19 @@
                 <div class="goods-box">
                   <p class="margin-10" v-if="users.length==0">没有用户数据</p>
                   <table class="table">
+                    <tr>
+                      <td>公司</td>
+                      <td>负责人</td>
+                      <td>登录用户</td>
+                    </tr>
                     <tr v-for="(v,i) in users">
-                      <td @click="chooseUser(i)" style="padding:10px 0;text-indent:15px;">{{v.name}} / {{v.managerName}}</td>
+<!--
+                      <td @click="chooseUser(i)" style="padding:10px 0;text-indent:15px;">{{v.name}} / {{v.managerName}} / {{v.username}}  </td>
+-->
+                      <td  @click="chooseUser(i)">{{v.companyName}} </td>
+                      <td  @click="chooseUser(i)">{{v.managerName}} </td>
+                      <td  @click="chooseUser(i)">{{v.username}} </td>
+
                     </tr>
                     <tr>
                     	<td>
@@ -223,6 +303,27 @@
       </Modal>
 
 
+    <Modal
+      v-model="addressModal"
+      title="新增地址"
+      @on-cancel="addressModal=false"
+      @on-ok="addAddress">
+
+      <Row>
+        <Col span="24">
+          <Cascader :data="provs" v-model="AddAddress"></Cascader>
+        </Col>
+      </Row>
+      <Row>
+        <Col span="4">
+          <p class="input-text">具体街道：</p>
+        </Col>
+        <Col span="20">
+          <Input v-model="AddressLine" style="width: 300px"></Input>
+        </Col>
+      </Row>
+    </Modal>
+
   </div>
 </template>
 <script type="text/javascript">
@@ -233,6 +334,8 @@ import Vue from 'vue'
 export default{
   data(){
     return {
+      addressModal: false,
+      AddressLine: '',
       formItem:{
       	detailListName:'',
       	customerId:'',
@@ -243,6 +346,7 @@ export default{
         endTs:'',
         deliveryDate:''
       },
+      titleList:[],
       full_date:'',
       users:[],
       u_total:0,
@@ -255,6 +359,7 @@ export default{
       category_index:0,
       group_index:0,
       goods:[],
+      good:'',
       key:'',
       addGroupModal:false,
       goodsAddSkuModel:false,
@@ -265,6 +370,38 @@ export default{
       interval_H:2,
       productGroup:{},
       total:0,
+      payMethodList: [
+        {
+          label: '月结',
+          value: '月结'
+        },
+        {
+          label: '现结',
+          value: '现结'
+        }
+      ],
+      addressList:[],
+      AddAddress:[],
+      provs:[
+        {value: 11, label: '浙江', children: [
+            {value: 87, label: '杭州市', children: [
+                {value: 844, label: '上城区'},
+                {value: 845, label: '下城区'},
+                {value: 846, label: '江干区'},
+                {value: 847, label: '拱墅区'},
+                {value: 848, label: '西湖区'},
+                {value: 849, label: '滨江区'},
+                {value: 850, label: '萧山区'},
+                {value: 851, label: '余杭区'},
+                {value: 852, label: '桐庐县'},
+                {value: 853, label: '淳安县'},
+                {value: 854, label: '建德市'},
+                {value: 855, label: '富阳市'},
+                {value: 856, label: '临安市'}
+              ]}
+          ]}
+      ]
+
     }
   },
   mounted(){ 
@@ -352,7 +489,7 @@ export default{
       this.goodsAddSkuModel = true;
       this.goodsSku = this.goods[i].skusTypes;
       this.goodsSkuData = this.goods[i].skus;
-      
+      this.good = this.goods[i];
     },
     chooseSpec(i,i1){
       Vue.set(this.optKey,i,this.goodsSku[i].items[i1].id);
@@ -374,7 +511,14 @@ export default{
       // 最后拿到sku的id
 
       this.goodsSkuData[sku_index].quantity = 1;
-      this.formItem.carts.push(this.goodsSkuData[sku_index]);
+      var o = this.goodsSkuData[sku_index];
+      var b = this.goods[sku_index];
+      o.companyName = b.companyName;
+      o.invoice = b.invoice;
+      o.orderRule = b.orderRule;
+      o.supplyRule = b.supplyRule;
+
+      this.formItem.carts.push(o);
       this.goodsAddSkuModel = false;
       this.optKey = [];
     },
@@ -430,6 +574,9 @@ export default{
       sum = Math.round(sum*1000)/1000;
       this.total = sum;
     },
+    addnewAddress(){
+      this.addressModal = true;
+    },
     save(){
     	if(this.formItem.detailListName==''){
     		this.$Message.error('清单名不能为空');
@@ -454,18 +601,23 @@ export default{
 
     	params.append('detailListName', this.formItem.detailListName);
       params.append('customerId', this.formItem.customerId);
-      params.append('remarks', this.formItem.remarks);
+      params.append('remarks', this.formItem.remarks==undefined?"":this.formItem.remarks);
+      params.append('describe', this.formItem.describe);
+      params.append('payMethod', this.formItem.payMethod);
       params.append('startTs', this.formItem.startTs);
       params.append('endTs', this.formItem.endTs);
-    	params.append('deliveryDate', _strToTime(this.formItem.deliveryDate));
+      params.append('invoiceIds', this.formItem.invoiceIds);
+      params.append('addressId', this.formItem.addressId);
+
+      params.append('deliveryDate', _strToTime(this.formItem.deliveryDate+" "+this.formItem.endTs));
       params.append('interval', interval);
-    	
     	this.formItem.carts.forEach((value,index)=>{
     	  params.append('skus['+index+'].skuId', value.id);
     	  params.append('skus['+index+'].num', value.quantity);
     	});
 
     	axios.post(URL+'list/zijian',params).then(function(res){
+
     	  if(res.data.errorCode!=200){
     	    this.$Message.error(res.data.moreInfo);
     	  }else{
@@ -479,8 +631,10 @@ export default{
     },
     chooseUser(i){
     	this.formItem.customerId = this.users[i].id;
-    	this.formItem.customerName = this.users[i].username;
+    	this.formItem.customerName = this.users[i].companyName + "/" + this.users[i].managerName + '/' + this.users[i].username;
     	this.UserModal = false;
+    	this.addressList = [];
+      this.getTitleByCompany(this.formItem.customerId);
     },
     getUser(){
     	axios.get(URL+'user',{
@@ -543,7 +697,89 @@ export default{
       this.formItem.startTs = e[0];
       this.formItem.endTs = e[1];
     },
+    // 获取用户发票
+    getTitleByCompany(userId){
+      this.titleList = [];
+      axios.get(URL+'invoice/byUser',{
+        params:{
+          customerId:userId
+        }
+      }).then(function(res){
+        var data = res.data.data;
+        if (res.data.errorCode==200) {
+          this.titleList = data;
+        } else {
+          this.$Message.error('发票查询失败，请联系管理员');
+        }
+        if (this.titleList.length == 0){
+          this.$Message.error('该公司尚未添加发票，请先设置');
+        }
+      }.bind(this)).catch(function(res){
+        this.$Message.error('查询请求失败');
+      }.bind(this));
 
+      axios.get(URL+'address/byUser',{
+        params:{
+          customerId:userId
+        }
+      }).then(function(res){
+        var data = res.data.data;
+        if (res.data.errorCode==200) {
+          this.addressList = data;
+        } else {
+          this.$Message.error('地址查询失败，请联系管理员');
+        }
+        if (this.addressList.length == 0){
+          this.$Message.error('该公司尚未添加地址，请先设置');
+          this.addressModal = true;
+        }
+      }.bind(this)).catch(function(res){
+        this.$Message.error('查询请求失败');
+      }.bind(this));
+    },
+    addAddress(){
+      let adds = this.AddAddress;
+      let prov = adds[0];
+      let city = adds[1];
+      let county = adds[2];
+      let provName = '';
+      let cityName = '';
+      let countyName = '';
+      let line = this.AddressLine;
+      for(var i in this.provs){
+        if (this.provs[i].value == prov){
+          provName = this.provs[i].label;
+          var citys = this.provs[i].children;
+          for(var j in citys){
+            if(citys[j].value == city){
+              var countys = citys[j].children;
+              cityName = citys[j].label;
+              for(var l in countys){
+                if(countys[l].value == county){
+                  countyName = countys[l].label;
+                  break;
+                }
+              }
+            }
+          }
+        }
+      }
+      var params = new URLSearchParams();
+      params.append('customerId', this.formItem.customerId);
+      params.append('address', provName + "#" + cityName + "#" + countyName + "#" + line);
+      axios.post(URL+'address/createAddress',params).then(function(res){
+        if(res.data.errorCode!=200){
+          this.$Message.error(res.data.moreInfo);
+        }else{
+          this.$Message.success('添加成功');
+          this.getTitleByCompany(this.formItem.customerId);
+        }
+
+      }.bind(this)).catch(function(error){
+        this.$Message.error('添加失败');
+      }.bind(this));
+
+    },
   },
 }
 </script>

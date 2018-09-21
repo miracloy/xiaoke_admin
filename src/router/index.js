@@ -254,44 +254,57 @@ const DataLayout = (resolve)=>{
     resolve(module)
   })
 }
-const ProductSale = (resolve)=>{
-  import('@/components/checkbalance/ProductSale.vue').then((module)=>{
-    resolve(module)
-  })
-}
 
-const addInput = (resolve)=>{
-  import('@/components/checkbalance/AddInput.vue').then((module)=>{
+const company = (resolve)=>{
+  import('@/components/user/Company.vue').then((module)=>{
     resolve(module)
   })
 }
 
 const supplyCompany = (resolve)=>{
-  import('@/components/checkbalance/SupplyCompany.vue').then((module)=>{
+  import('@/components/user/SupplyCompany.vue').then((module)=>{
     resolve(module)
   })
 }
 
-const wareHouseProduct = (resolve)=>{
-  import('@/components/checkbalance/WareHouseProduct.vue').then((module)=>{
+const invoice = (resolve)=>{
+  import('@/components/user/invoice.vue').then((module)=>{
     resolve(module)
   })
 }
 
-const repoInputDetail = (resolve)=>{
-  import('@/components/checkbalance/InputDetail.vue').then((module)=>{
+const GoodsInputManage = (resolve)=>{
+  import('@/components/goods/GoodsInputManage.vue').then((module)=>{
     resolve(module)
   })
 }
 
-const inputDraft = (resolve)=>{
-  import('@/components/checkbalance/InputDraft.vue').then((module)=>{
+const GoodsInputAdd = (resolve)=>{
+  import('@/components/goods/GoodsInputAdd.vue').then((module)=>{
     resolve(module)
   })
 }
 
-const inputDetailEdit = (resolve)=>{
-  import('@/components/checkbalance/InputDetailEdit.vue').then((module)=>{
+const GoodsInputDetail = (resolve)=>{
+  import('@/components/goods/GoodsInputDetail.vue').then((module)=>{
+    resolve(module)
+  })
+}
+
+const GoodsInputEdit = (resolve)=>{
+  import('@/components/goods/GoodsInputEdit.vue').then((module)=>{
+    resolve(module)
+  })
+}
+
+const PayList = (resolve)=>{
+  import('@/components/checkbalance/GoodsInputPayList.vue').then((module)=>{
+    resolve(module)
+  })
+}
+
+const ReceiveList = (resolve)=>{
+  import('@/components/checkbalance/GoodsOrderReceiveList.vue').then((module)=>{
     resolve(module)
   })
 }
@@ -376,6 +389,34 @@ const Router  = new VueRouter({
                 breadcrumb:'商品规格'
               },
               component:Spec
+            },
+            {
+              path:'input_manage',
+              meta:{
+                breadcrumb:'进货管理'
+              },
+              component:GoodsInputManage
+            },
+            {
+              path:'input_add',
+              meta:{
+                breadcrumb:'新增进货单'
+              },
+              component:GoodsInputAdd
+            },
+            {
+              path:'input_detail',
+              meta:{
+                breadcrumb:'进货单详情'
+              },
+              component:GoodsInputDetail
+            },
+            {
+              path:'input_edit',
+              meta:{
+                breadcrumb:'进货单修改'
+              },
+              component:GoodsInputEdit
             }
           ]
         }
@@ -401,6 +442,27 @@ const Router  = new VueRouter({
               },
               component:User
             },
+            {
+              path:'company',
+              meta:{
+                breadcrumb:'服务客户'
+              },
+              component: company
+            },
+            {
+              path:'supplyCompany',
+              meta:{
+                breadcrumb:'供应商'
+              },
+              component:  supplyCompany
+            },
+            {
+              path:'invoice',
+              meta:{
+                breadcrumb:'发票'
+              },
+              component:   invoice
+            }
           ]
         }
       ]
@@ -653,52 +715,17 @@ const Router  = new VueRouter({
             {
               path:'index',
               meta:{
-                breadcrumb:'进货单-正式'
+                breadcrumb:'应付'
               },
-              component:ProductSale
+              component:PayList
             },
             {
-              path:'addInput',
+              path:'index_receive',
               meta:{
-                breadcrumb:'新增进货单'
+                breadcrumb:'应收'
               },
-              component:addInput
+              component:ReceiveList
             },
-            {
-              path:'supplyCompany',
-              meta:{
-                breadcrumb:'供应商'
-              },
-              component:supplyCompany
-            },
-            {
-              path:'wareHouseProduct',
-              meta:{
-                breadcrumb:'供应商xx'
-              },
-              component:wareHouseProduct
-            },
-            {
-              path:'detail',
-              meta:{
-                breadcrumb:'明细'
-              },
-              component:repoInputDetail
-            },
-            {
-              path:'inputDraft',
-              meta:{
-                breadcrumb:'进货单-草稿'
-              },
-              component:inputDraft
-            },
-            {
-              path:'inputDetailEdit',
-              meta:{
-                breadcrumb:'进货单-草稿修改'
-              },
-              component:inputDetailEdit
-            }
           ]
         }
       ]

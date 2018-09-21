@@ -199,39 +199,65 @@ export default {
                      title: '清单类型',
                      key: 'orderType',
                      render:(h,params)=>{
-                      if(!params.row.orderType) return '';
-                      return params.row.orderType.friendlyType;
+                       var m;
+                       if(params.row.orderType==null)
+                         m = '';
+                       else
+                         m = params.row.orderType.friendlyType;
+                       return h('div', [
+                         h('span', m)
+                       ]);
                      }
                  },
                  {
                      title: '套餐类型',
                      key: 'packageType',
                      render:(h,params)=>{
-                      if(!params.row.packageType) return '';
-                      if(params.row.packageType.type=='SINGLE'){
-                        return params.row.packageType.friendlyType+'('+params.row.num+')';
-                      }
-                      return params.row.packageType.friendlyType;
+                       if (params.row.packageType==null)
+                         return h('div', [
+                           h('span', '')
+                         ]);
+                       if (params.row.packageType.type=='SINGLE')
+                         return h('div', [
+                           h('span', params.row.packageType.friendlyType+'('+params.row.num+')')
+                         ]);
+                       else
+                         return h('div', [
+                           h('span', params.row.packageType.friendlyType)
+                         ]);
                      }
                  },
                  {
                      title: '金额',
                      key: 'orderType',
                      render:(h,params)=>{
-                      if(!params.row.packageType && !params.row.price) return '';
-                      if(params.row.packageType.type=='SINGLE'){
-                        var str = '人均:'+ params.row.price;
-                        return str;
-                      }else{
-                        return params.row.detailtotal;
-                      }
+                       if (params.row.packageType==null || params.row.price==null)
+                         return h('div', [
+                           h('span', '')
+                         ]);
+                       if (params.row.packageType.type=='SINGLE')
+                         return h('div', [
+                           h('span', '人均:'+ params.row.price)
+                         ]);
+                       else
+                         return h('div', [
+                           h('span', params.row.detailtotal)
+                         ])
                      }
                  },
                  {
                      title: '下单时间',
                      key: 'createdAt',
                      render:(h,params)=>{
-                      return _timestrToDate(params.row.createdAt);
+                       let m = _timestrToDate(params.row.createdAt);
+                       return h('div', [
+                         h('Icon', {
+                           props: {
+                             type: 'ionic'
+                           }
+                         }),
+                         h('span', m)
+                       ]);
                      }
                  },
                  {
@@ -252,13 +278,18 @@ export default {
                      title: '当日配送时间',
                      key: 'endTs',
                      render:(h,params)=>{
-                      if(params.row.endTs){
-                        return _timestrToHs(params.row.endTs);
-                      }else{
-                        return '';
-                      }
-                     }
-                 },
+                       let m = '';
+                       if (params.row.endTs)
+                         m = _timestrToHs(params.row.endTs);
+                       return h('div', [
+                         h('Icon', {
+                           props: {
+                             type: 'ionic'
+                           }
+                         }),
+                         h('span', m)
+                       ]);
+                 }},
                  {
                      title: '备注',
                      key: 'remarks',

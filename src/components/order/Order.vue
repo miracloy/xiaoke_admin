@@ -112,6 +112,14 @@
               <p class="margin-10">{{info.addressDetail}}</p>
           </Col>
         </Row>
+        <Row>
+          <Col span="6">
+          <p class="margin-10">开票信息</p>
+          </Col>
+          <Col span="18">
+          <p class="margin-10">{{invoices}}</p>
+          </Col>
+        </Row>
         <div slot="footer">
           <Button type="primary" @click="print(info.id)">打印订单</Button>
         </div>
@@ -146,6 +154,7 @@ import {_timestrToDate} from '@/api/common.js'
 export default {
   data () {
     return {
+      invoices:[],
       statusSelect: [
                   {
                       value: '',
@@ -207,21 +216,35 @@ export default {
                      title: '订单状态',
                      key: 'status',
                      render:(h,params)=>{
-                        return params.row.status.friendlyType;
+                       var m = params.row.status.friendlyType;
+                       return h('div', [
+                         h('Icon', {
+                           props: {
+                             type: 'ionic'
+                           }
+                         }),
+                         h('span', m)
+                       ]);
                      }
                  },
                  {
                  	title:'下单时间',
                  	key:'createdAt',
-                  render:(h,params)=>{
-                   return _timestrToDate(params.row.createdAt);
-                  }
+                   render:(h,params)=>{
+                     var m = _timestrToDate(params.row.createdAt);
+                     return h('div', [
+                       h('span', m)
+                     ]);
+                   }
                  },
                  {
                      title: '配送时间',
                      key: 'deliveryDate',
                      render:(h,params)=>{
-                      return _timestrToDate(params.row.deliveryDate);
+                       var m = _timestrToDate(params.row.deliveryDate);
+                       return h('div', [
+                         h('span', m)
+                       ]);
                      }
                  },
                  {
@@ -373,10 +396,8 @@ export default {
     del(){
       this.modal_loading = true;
       var id  = this.data1[this.del_index].id;
-
       axios.delete(URL+'order/'+id).then(function(res){
         this.data1.splice(this.del_index,1);
-
         this.modal_loading = false;
         this.delModal = false;
         this.del_index = null;
@@ -391,10 +412,10 @@ export default {
         .then(function(res){
           var data = res.data;
           this.info =data.data;
-          debugger;
           this.info.deliveryDate = _timestrToDate(this.info.deliveryDate);
           this.spin = false;
           this.infoModal = true;
+          this.getInvoices(id);
       }.bind(this)).catch(function(error){
         this.$Message.error('获取详情失败');
       });
@@ -424,6 +445,17 @@ export default {
           this.spin = false;
       }.bind(this)).catch(function(error){
         this.$Message.error('请求失败');
+      }.bind(this));
+    },
+    getInvoices(id){
+      axios.get(URL+'list/invoices/'+id)
+        .then(function(res){
+          if(res.data.errorCode==200){
+            this.invoices = res.data.data;
+          }else{
+          }
+          this.spin = false;
+        }.bind(this)).catch(function(error){
       }.bind(this));
     },
     delivery(index){

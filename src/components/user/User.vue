@@ -8,12 +8,12 @@
     <Row class="margin-10">
       <Col span="12">
         <div class="searchBox addBox">
-         <!--  <DatePicker type="daterange" placement="bottom-start" placeholder="选择日期" style="width: 200px" v-model="date"></DatePicker> -->
-          <Input v-model="key" icon="ios-search" placeholder="公司名称/负责人手机号" style="width: 200px"></Input>
+          <Input v-model="key" icon="ios-search" placeholder="公司名称/用户手机号/用户登录名" style="width: 300px"></Input>
           <Select v-model="fv" @on-change="statusChange" style="width:100px" placeholder="是否过滤游客">
               <Option v-for="item in statusSelect" :value="item.value" :key="item.value" >{{ item.label }}</Option>
           </Select>
           <Button type="primary" @click="search">查询</Button>
+          <Button type="success" @click="clear">置空</Button>
         </div>
       </Col>
       <Col span="2" offset="8">
@@ -27,7 +27,7 @@
      <Table stripe border highlight-row :columns="columns1" :data="data1" ></Table>
      <div style="margin: 10px;overflow: hidden">
          <div style="float: right;">
-             <Page :total="total" :current="current" @on-change="changePage"></Page>
+             <Page :total="total" :page-size="size"  @on-change="changePage"></Page>
          </div>
      </div>
     </div>
@@ -38,6 +38,17 @@
         @on-ok="add"
         @on-cancel="addModal=false">
 
+        <Row>
+          <Col span="6">
+          <p class="margin-10">公司名称</p>
+          </Col>
+          <Col span="18">
+          <Tag>{{newUser.companyName}}</Tag>
+          <Select filterable v-model="newUser.companyId" @on-change="newcompanyChange" style="width:200px" placeholder="选择公司">
+            <Option v-for="item in  companyList" :value="item.value" :key="item.value" >{{ item.label }}</Option>
+          </Select>
+          </Col>
+        </Row>
         <Row>
           <Col span="6">
               <p class="margin-10">公司名称</p>
@@ -80,18 +91,18 @@
         </Row>
         <Row>
           <Col span="6">
-              <p class="margin-10">密码</p>
+          <p class="margin-10">用户手机号</p>
           </Col>
           <Col span="18">
-            <Input v-model="newUser.password" style="width: 300px" ></Input>
+          <Input v-model="newUser.userphone" style="width: 300px" ></Input>
           </Col>
         </Row>
         <Row>
           <Col span="6">
-              <p class="margin-10">税号</p>
+              <p class="margin-10">密码</p>
           </Col>
           <Col span="18">
-            <Input v-model="newUser.taxNumber" style="width: 300px" ></Input>
+            <Input v-model="newUser.password" style="width: 300px" ></Input>
           </Col>
         </Row>
     </Modal>
@@ -107,7 +118,11 @@
               <p class="margin-10">公司名称</p>
           </Col>
           <Col span="18">
-            <Input v-model="updateUser.name" style="width: 300px" ></Input>
+            <Tag>{{updateUser.companyName}}</Tag>
+            <!--<Input v-model="updateUser.name" style="width: 100px" ></Input>-->
+            <Select filterable v-model="updateUser.companyId" @on-change="companyChange" style="width:200px" placeholder="选择公司">
+              <Option v-for="item in  companyList" :value="item.value" :key="item.value" >{{ item.label }}</Option>
+            </Select>
           </Col>
         </Row>
         <Row>
@@ -115,7 +130,7 @@
               <p class="margin-10">公司负责人</p>
           </Col>
           <Col span="18">
-            <Input v-model="updateUser.managerName" style="width: 300px" ></Input>
+            <Input readonly v-model="updateUser.managerName" style="width: 300px" ></Input>
           </Col>
         </Row>
         <Row>
@@ -123,7 +138,7 @@
               <p class="margin-10">公司负责人联系方式</p>
           </Col>
           <Col span="18">
-            <Input v-model="updateUser.phoneNumber" style="width: 300px" ></Input>
+            <Input readonly v-model="updateUser.phoneNumber" style="width: 300px" ></Input>
           </Col>
         </Row>
         <Row>
@@ -131,15 +146,31 @@
               <p class="margin-10">公司地址</p>
           </Col>
           <Col span="18">
-            <Input v-model="updateUser.address" style="width: 300px" ></Input>
+            <Input readonly v-model="updateUser.address" style="width: 300px" ></Input>
           </Col>
         </Row>
+      <Row>
+        <Col span="6">
+        <p class="margin-10">用户公司别名</p>
+        </Col>
+        <Col span="18">
+        <Input v-model="updateUser.companyName" style="width: 300px" ></Input>
+        </Col>
+      </Row>
         <Row>
           <Col span="6">
               <p class="margin-10">登录名</p>
           </Col>
           <Col span="18">
             <Input v-model="updateUser.username" style="width: 300px" ></Input>
+          </Col>
+        </Row>
+        <Row>
+          <Col span="6">
+          <p class="margin-10">登录名</p>
+          </Col>
+          <Col span="18">
+          <Input v-model="updateUser.userphone" style="width: 300px" ></Input>
           </Col>
         </Row>
         <Row>
@@ -176,7 +207,7 @@ import {_timestrToDate,_timestrToHs} from '@/api/common.js'
 export default {
   data () {
     return {
-      fv:'0',
+      fv:'1',
       statusSelect: [
                   {
                       value: '0',
@@ -188,21 +219,21 @@ export default {
                   },
               ],
       newUser:{
-        company:'',
-        name:'',
-        phone:'',
-        username:'',
-        address:'',
-        password:'',
-        taxNumber:''
+        company: '',
+        name: '',
+        phone: '',
+        username: '',
+        userphone: '',
+        address: '',
+        password: ''
       },
+      companyList:[],
       updateUser:{},
       addModal:false,
       updateModal:false,
-      date:'',
       total:0,
       current:1,
-      size:10,
+      size:1,
       spin:false,
       key:'',
       data1: [],
@@ -210,23 +241,26 @@ export default {
       columns1: [
                  {
                      title: '编号',
-                     key: 'id'
+                     key: 'id',
+                     width:60,
                  },
                  {
                      title: '公司名称',
-                     key: 'name'
+                     key: 'companyName'
                  },
                  {
                      title: '负责人姓名',
                      key: 'managerName',
+                     width:100,
                  },
                  {
-                     title: '负责人手机号',
-                     key: 'phoneNumber',
+                     title: '用户手机',
+                     key: 'phone',
                  },
                  {
                      title: '信用额度',
                      key: 'reditAmount',
+                     width:90,
                  },
                  {
                      title: '登陆名',
@@ -236,19 +270,20 @@ export default {
                      title: '创建时间',
                      key: 'createdAt',
                      render:(h,params)=>{
-                      return _timestrToDate(params.row.createdAt);
+                      return h('span', _timestrToDate(params.row.createdAt));
                      }
                  },
                  {
                      title: '结算时间',
                      key: 'settleTs',
                      render:(h,params)=>{
-                      return _timestrToDate(params.row.settleTs);
+                      return h('span',_timestrToDate(params.row.settleTs));
                      }
                  },
                  {
                      title: '账期状态',
                      key: 'cycleStatus',
+                     width:90,
                      render:(h,params)=>{
                         var type = params.row.cycleStatus==true || params.row.cycleStatus==null ? 'default' : 'info';
                         var statusName = params.row.cycleStatus==true || params.row.cycleStatus==null ? '正常' : '冻结';
@@ -320,20 +355,10 @@ export default {
     this.dataInit();
   },
   methods:{
+    //数据初始化
     dataInit(){
-      axios.get(URL+'user',{
-        params:{
-          page:0,
-          size:this.size,
-        }
-      }).then(function(res){
-        var data = res.data.data;
-        this.total = data.total;
-        this.current = data.current+1;
-        this.data1 = data.data;
-      }.bind(this)).catch(function(error){
-        console.log(error);
-      });
+      this.doSearch(null, this.fv, this.size, 0);
+      this.getCompanyList();
     },
     updateInit(){
       axios.get(URL+'user',{
@@ -352,10 +377,11 @@ export default {
         console.log(error);
       });
     },
+    // 翻页
     changePage(n){
       n = n-1;
-      this.spin = true;
-      axios.get(URL+'user',{
+      this.doSearch(this.key, this.fv, this.size, n);
+      /*axios.get(URL+'user',{
         params:{
           page:n,
           size:this.size,
@@ -371,17 +397,20 @@ export default {
           this.spin = false;
       }.bind(this)).catch(function(error){
         console.log('error');
-      });
+      });*/
     },
+    // 查询
     search(){
-      console.log(this.key);
-      this.spin = true;
+      this.doSearch(this.key, this.fv, this.size, 0);
+    },
+    // 查询
+    doSearch(key, fv, size, page){
       axios.get(URL+'user',{
         params:{
-          page:0,
-          size:this.size,
-          key:this.key,
-          fv:this.fv
+          page: page,
+          size: size,
+          key: key,
+          fv: fv
         }
       }).then(function(res){
         var data = res.data.data;
@@ -389,9 +418,14 @@ export default {
         this.current = data.current+1;
         this.data1 = data.data;
         this.spin = false;
+        debugger
       }.bind(this)).catch(function(error){
         console.log(error);
       });
+    },
+    // 置空
+    clear(){
+      this.key = '';
     },
     add(){
         var params = new URLSearchParams();
@@ -402,7 +436,9 @@ export default {
         params.append('username', this.newUser.username);
         params.append('password', this.newUser.password);
         params.append('taxNumber', this.newUser.taxNumber);
-        axios.post(URL+'user',params).then(function(res){
+        params.append('companyId', this.newUser.companyId);
+
+      axios.post(URL+'user',params).then(function(res){
           if(res.data.errorCode!=200){
             this.$Message.error(res.data.moreInfo);
           }else{
@@ -425,12 +461,17 @@ export default {
         console.log(error);
       });
       this.updateModal = true;
+      this.getCompanyList();
     },
     update(){
-      if(this.updateUser.password==undefined){
+      if(this.updateUser.password===undefined){
         this.updateUser.password='';
       }
-      var params = 'name='+this.updateUser.managerName+'&companyName='+this.updateUser.name+'&phone='+this.updateUser.phoneNumber+'&address='+this.updateUser.address+'&username='+this.updateUser.username+'&password='+this.updateUser.password+'&taxNumber='+this.updateUser.taxNumber;
+      if(this.updateUser.companyId===undefined){
+        this.updateUser.companyId='';
+      }
+      var params = 'companyName='+this.updateUser.companyName+'&username='+this.updateUser.username+
+        '&password='+this.updateUser.password + '&companyId=' + this.updateUser.companyId;
 
       axios.put(URL+'user/'+this.updateUser.id+'?'+params).then(function(res){
         if(res.data.errorCode!=200){
@@ -463,6 +504,55 @@ export default {
     },
     statusChange(e){
       this.status = e;
+    },
+    companyChange(e){
+      let cid = e;
+      axios.get(URL+'company/' + cid,{
+        params:{}
+      }).then(function(res){
+        var datas = res.data.data;
+        this.updateUser.name = datas.companyName;
+        this.updateUser.managerName = datas.managerName;
+        this.updateUser.phoneNumber = datas.phoneNumber;
+        this.updateUser.address = datas.address;
+        this.updateUser.companyId = datas.id;
+
+      }.bind(this)).catch(function(error){
+        console.log(error);
+      });
+    },
+    newcompanyChange(e){
+      let cid = e;
+      axios.get(URL+'company/' + cid,{
+        params:{}
+      }).then(function(res){
+        var datas = res.data.data;
+        this.newUser.companyName = datas.companyName;
+        this.newUser.name = datas.managerName;
+        this.newUser.phone = datas.phoneNumber;
+        this.newUser.address = datas.address;
+        this.newUser.companyId = datas.id;
+      }.bind(this)).catch(function(error){
+        console.log(error);
+      });
+    },
+    getCompanyList(){
+      axios.get(URL+'company/getSimpleCompanies',{
+        params:{}
+      }).then(function(res){
+        var datas = res.data.data;
+        var list = new Array();
+        datas.forEach(function(v,i,datas){
+          var o = {
+            label: v.companyName + ' ' + v.managerName,
+            value: v.id
+          };
+          list.push(o);
+        });
+        this.companyList = list;
+      }.bind(this)).catch(function(error){
+        console.log(error);
+      });
     },
   }
 }

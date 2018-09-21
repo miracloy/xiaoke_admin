@@ -33,6 +33,19 @@
           </Col>
         </Row>
 
+      <Row class="margin-10">
+        <Col span="4">
+        <p class="input-text">供应商</p>
+        </Col>
+        <Col span="10">
+        <p>
+          <Select filterable clearable v-model="formItem.companyId" placeholder="供应商选择" style="width:240px;" >
+            <Option v-for="item in companyList" :value="item.value" :key="item.label">{{item.label}}</Option>
+          </Select>
+        </p>
+        </Col>
+      </Row>
+
     	<Row class="margin-10">
           <Col span="4">
             <p class="input-text">商品图片</p>
@@ -86,42 +99,115 @@
 
     	<Row class="margin-10">
           <Col span="4">
-            <p class="input-text">价格</p>
+            <p class="input-text">售价</p>
           </Col>
           <Col span="10">
-            <InputNumber :max="100000" :min="0" v-model="formItem.price" style="width: 200px"></InputNumber>
-          </Col>
-        </Row>
-
-    	<Row class="margin-10">
-          <Col span="4">
-            <p class="input-text">简介</p>
-          </Col>
-          <Col span="10">
-            <Input v-model="formItem.description" style="width: 300px"></Input>
-          </Col>
-        </Row>
-
-    	<Row class="margin-10">
-          <Col span="4">
-            <p class="input-text">详情</p>
-          </Col>
-          <Col span="16">
-            <div id="editorElem" style="text-align:left"></div>
-          </Col>
-        </Row>
-
-    	<Row class="margin-10">
-          <Col span="10" class="save">
-            <Button type="primary" size="large" @click="save">保存</Button>
+            <InputNumber :max="100000" :min="0" v-model="formItem.price" style="width: 200px"></InputNumber>元
           </Col>
       </Row>
 
-      <Spin class="demo-spin-col" v-if="spin">
-          <Icon type="load-c" size=25 class="demo-spin-icon-load"></Icon>
-          <div>Loading</div>
-      </Spin>
+          <Row class="margin-10">
+            <Col span="4">
+            <p class="input-text">进货价</p>
+            </Col>
+            <Col span="10">
+            <InputNumber :max="100000" :min="0" v-model="formItem.cost" style="width: 200px"></InputNumber>元
+            </Col>
+          </Row>
 
+              <Row class="margin-10">
+                <Col span="4">
+                <p class="input-text">下单要求</p>
+                </Col>
+                <Col span="10">
+                <Input v-model="formItem.orderRule" style="width: 300px"></Input>
+                </Col>
+              </Row>
+
+              <Row class="margin-10">
+                <Col span="4">
+                <p class="input-text">供应需求</p>
+                </Col>
+                <Col span="10">
+                <Input v-model="formItem.supplyRule" style="width: 300px"></Input>
+                </Col>
+              </Row>
+
+              <Row class="margin-10">
+                <Col span="4">
+                <p class="input-text">发票类型</p>
+                </Col>
+                <Col span="10">
+                  <Select v-model="formItem.invoice" style="width:100px" placeholder="选择发票">
+                    <Option v-for="item in invoiceList" :value="item.value" :key="item.label" >{{ item.label }}</Option>
+                  </Select>
+                </Col>
+              </Row>
+                <Row class="margin-10">
+                  <Col span="4">
+                    <p class="input-text">简介</p>
+                  </Col>
+                  <Col span="10">
+                    <Input v-model="formItem.description" style="width: 300px"></Input>
+                  </Col>
+              </Row>
+            <Row class="margin-10">
+              <Col span="4">
+              <p class="input-text">排序</p>
+              </Col>
+              <Col span="10">
+              <InputNumber :max="100000" :min="0" :precision="0" v-model="formItem.orderNumber" style="width: 80px"></InputNumber>
+              </Col>
+            </Row>
+
+                <Row class="margin-10">
+                  <Col span="4">
+                    <p class="input-text">详情</p>
+                  </Col>
+                  <Col span="16">
+                    <div id="editorElem" style="text-align:left"></div>
+                  </Col>
+              </Row>
+
+                <Row class="margin-10">
+                  <Col span="10" class="save">
+                    <Button type="primary" size="large" @click="save">保存</Button>
+                  </Col>
+              </Row>
+
+              <Spin class="demo-spin-col" v-if="spin">
+                  <Icon type="load-c" size=25 class="demo-spin-icon-load"></Icon>
+                  <div>Loading</div>
+              </Spin>
+    <Modal
+      v-model="chooseCompanyModal"
+      title="选择供应商"
+      @on-cancel="chooseCompanyModal=false" class="info">
+
+      <Row>
+        <Col span="5">
+        <p class="input-text">公司名称：</p>
+        </Col>
+        <Col span="11">
+        <p class="input-text" style="text-align: left;padding-bottom: 10px"><Input v-model="company_key"  style="width: 200px"></Input></p>
+        </Col>
+        <Col  span="3">
+        <Button type="primary" @click="searchcompany">查询</Button>
+        </Col>
+      </Row>
+
+      <Row>
+        <Col>
+        <Table stripe border highlight-row :columns="choose_company" :data="data1" size="small" ref="table"></Table>
+        <div style="margin: 10px;overflow: hidden">
+          <div style="float: right;">
+            <Page :total="company_total" :current="company_current" @on-change="company_changePage" :page-size="company_size"></Page>
+          </div>
+        </div>
+        </Col>
+      </Row>
+
+    </Modal>
 	</div>
 </template>
 <script type="text/javascript">
@@ -136,17 +222,85 @@ export default{
 				name:'',
         imgs:[],
         price:0,
+        cost: 0,
+        orderRule: '',
+        company: '',
+        companyId: '',
+        supplyRule: '',
+        invoice: '',
+        orderNumber: 0,
         description:'',
         categoryId:'',
         qtyAvailable:0,
         longDescription:''
 			},
+      companyList: [],
+      chooseCompanyModal: false,
+      choose_company:[
+        {
+          title: '操作',
+          key: 'c',
+          render:(h,params)=>{
+            return h('Button',{
+              props:{
+                type:'info',
+                size:'small'
+              },
+              on:{
+                click:()=>{
+                  this.setcompanytoInput(params.row);
+                }
+              }
+            },'选择');
+          }
+        },
+        {
+          title: '编号',
+          key: 'id'
+        },
+        {
+          title: '商家名称',
+          key: 'companyName'
+        },
+        {
+          title: '联系人',
+          key: 'managerName'
+        },
+        {
+          title: '联系方式',
+          key: 'phoneNumber'
+        },
+        {
+          title: '税号',
+          key: 'taxNumber'
+        },
+        {
+          title: '发票抬头',
+          key: 'title'
+        }
+
+      ],
+      company_total:0,
+      company_size:5,
+      company_current:1,
+      company_key: '',
+      data1: [],
+      invoiceList: [
+        {
+          label: '普票',
+          value: '普票'
+        },
+        {
+          label: '专票',
+          value: '专票'
+        }
+
+      ],
       token:'',
       defaultList: [],
       imgName: '',
       visible: false,
       uploadList: [],
-      token:'',
       categorys:[],
       spin:false,
 		}
@@ -193,13 +347,33 @@ export default{
     });
 
     this._getCategory();
-
+    this.getCompanyList();
   },
 	methods:{
     _getCategory(){
       axios.get(URL+'category').then(function(res){
         var data = res.data;
         this.categorys = data.data;
+      }.bind(this)).catch(function(error){
+        console.log(error);
+      });
+    },
+    getCompanyList(){
+      axios.get(URL+'company/getSimpleCompanies',{
+        params:{
+          type: 'SUPPLY'
+        }
+      }).then(function(res){
+        var datas = res.data.data;
+        var list = new Array();
+        datas.forEach(function(v,i,datas){
+          var o = {
+            label: v.companyName + ' ' + v.managerName,
+            value: v.id
+          };
+          list.push(o);
+        });
+        this.companyList = list;
       }.bind(this)).catch(function(error){
         console.log(error);
       });
@@ -272,7 +446,6 @@ export default{
     },
 
     save(){
-
       var params = new URLSearchParams();
       params.append('name', this.formItem.name);
       params.append('imgs', this.formItem.imgs);
@@ -281,6 +454,13 @@ export default{
       params.append('categoryId', this.formItem.categoryId);
       params.append('qtyAvailable', this.formItem.qtyAvailable);
       params.append('longDescription', this.formItem.longDescription);
+
+      params.append('cost', this.formItem.cost);
+      params.append('orderRule', this.formItem.orderRule);
+      params.append('supplyRule', this.formItem.supplyRule);
+      params.append('invoice', this.formItem.invoice);
+      params.append('orderNumber', this.formItem.orderNumber);
+      params.append('companyId', this.formItem.companyId);
       axios.post(URL+'product',params).then(function(res){
         if(res.data.errorCode!=200){
           this.$Message.error(res.data.moreInfo);
@@ -293,6 +473,17 @@ export default{
         this.$Message.error('添加失败');
       }.bind(this));
 
+    },
+    // 选择供应商
+    chooseCompany(){
+      this.chooseCompanyModal = true;
+    },
+
+    // 选择供应商
+    setcompanytoInput(obj){
+      this.formItem.company =  obj.companyName;
+      this.formItem.companyId =  obj.id;
+      this.chooseCompanyModal = false;
     }
 
 

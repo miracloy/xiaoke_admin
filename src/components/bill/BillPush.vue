@@ -34,6 +34,141 @@
         <div>Loading</div>
     </Spin>
 
+    <Modal
+      v-model="infoModal"
+      title="查看"
+      width="1200px"
+      @on-cancel="infoModal=false">
+      <Collapse v-model="value1" simple>
+        <Panel name="1">
+          基础信息
+          <p slot="content">
+              <Row>
+                <Col span="4">
+                <p class="margin-10">清单名称：</p>
+                </Col>
+                <Col span="6">
+                <p class="margin-10">{{info.name}}</p>
+                </Col>
+                <Col span="4">
+                <p class="margin-10">用户：</p>
+                </Col>
+                <Col span="6">
+                <p class="margin-10">{{info.user}}</p>
+                </Col>
+              </Row>
+            <Row>
+              <Col span="4">
+              <p class="margin-10">配送日期：</p>
+              </Col>
+              <Col span="6">
+              <p class="margin-10">{{info.deliveryDate}}</p>
+              </Col>
+            </Row>
+            <Row>
+              <Col span="4">
+              <p class="margin-10">配送地址：</p>
+              </Col>
+              <Col span="6">
+              <p class="margin-10">{{info.address}}</p>
+              </Col>
+            </Row>
+            <Row>
+              <Col span="4">
+              <p class="margin-10">结款方式：</p>
+              </Col>
+              <Col span="6">
+              <Tag color="orange">{{info.payMethod}}</Tag>
+              </Col>
+              <Col span="4">
+              <p class="margin-10">开票信息：</p>
+              </Col>
+              <Col span="6">
+              <ul v-for="(item, index) in info.invoices">
+                <Tag>{{item}}</Tag>
+              </ul>
+
+              </Col>
+            </Row>
+            <Row>
+              <Col span="4">
+              <p class="margin-10">任务描述：</p>
+              </Col>
+              <Col span="6">
+              <p class="margin-10">{{info.describe}}</p>
+              </Col>
+              <Col span="4">
+              <p class="margin-10">备注：</p>
+              </Col>
+              <Col span="6">
+              <p class="margin-10">{{info.remarks}}</p>
+              </Col>
+            </Row>
+            <Row>
+              <Col span="4">
+              <p class="margin-10">清单转订单：</p>
+              </Col>
+              <Col span="6">
+              <p class="margin-10">{{info.intervalInt}}</p>
+              </Col>
+            </Row>
+          </p>
+        </Panel>
+        <Panel name="2">
+          商品组
+          <p slot="content">
+          <table class="table" style="width: 1000px;">
+            <tr>
+              <td>图片</td>
+              <td>名称</td>
+              <td>供应商</td>
+              <td>发票</td>
+              <td>下单需求</td>
+              <td>供应需求</td>
+              <td>规格</td>
+              <td>数量</td>
+              <td>单价</td>
+              <td>合计</td>
+
+            </tr>
+            <tr v-for="(v,i) in listcarts">
+              <td><img v-if="v.img" :src="v.img" style="height:40px;"></td>
+              <td>{{v.name}}</td>
+              <td>{{v.companyName}}</td>
+              <td>{{v.invoice}}</td>
+              <td>{{v.orderRule}}</td>
+              <td>{{v.supplyRule}}</td>
+
+              <td>
+                {{v.spec}}
+              </td>
+              <td>{{v.quantity}}</td>
+              <td>{{v.skuPrice}}</td>
+              <td>{{v.totoalPrice.amount}}</td>
+            </tr>
+            <tr>
+              <td colspan="9"> </td>
+              <td>{{listcarts_totalPrice}}</td>
+            </tr>
+          </table>
+          </p>
+        </Panel>
+      </Collapse>
+    </Modal>
+    <Modal v-model="delModal" width="360">
+      <p slot="header" style="color:#f60;text-align:center">
+        <Icon type="information-circled"></Icon>
+        <span>删除确认</span>
+      </p>
+      <div style="text-align:center">
+        <p>数据删除后不可恢复，请谨慎操作</p>
+        <p>是否继续删除？</p>
+      </div>
+      <div slot="footer">
+        <Button type="error" size="large" long @click="dodel">删除</Button>
+      </div>
+    </Modal>
+
   </div>
 </template>
 
@@ -44,6 +179,13 @@ import {_timestrToDate,_timestrToHs} from '@/api/common.js'
 export default {
   data () {
     return {
+      infoModal: false,
+      delModal: false,
+      value1:['1','2','3'],
+      info:{},
+      listcarts:[],
+      listcarts_totalPrice: 0,
+      delId: '',
       newUser:{
         company:'',
         name:'',
@@ -87,9 +229,70 @@ export default {
                      title: '下单时间',
                      key: 'createdAt',
                      render:(h,params)=>{
-                      return _timestrToDate(params.row.createdAt);
+                      return h('span', _timestrToDate(params.row.createdAt));
                      }
                  },
+                {
+                  title: '是否已处理',
+                  key: 'isPend',
+                  render:(h,params)=>{
+                    let pend = params.row.isPend;
+                    let i = h('Icon',{
+                      props:{
+                        type:'ios-checkmark'
+                      }},'是');
+                    let i2 = h('Icon',{
+                      props:{
+                        type:'md-close'
+                      }},'是');
+                    let w1 = h('span', '是');
+                    let w2 = h('span', '否');
+
+                    if (pend){
+                      return h('div',[i,w1]);
+                    } else {
+                      return h('div',[i2,w2]);
+                    }
+                  }
+                },
+                {
+                  title: '操作',
+                  key: 'cc',
+                  render:(h,params)=>{
+                    var del = h('Button', {
+                      props: {
+                        size: 'small',
+                        shape: 'circle',
+                        type: 'error'
+                      },
+                      style: {
+                        marginRight: '5px'
+                      },
+                      on: {
+                        click: () => {
+                          this.del(params.row.id);
+                          //this.$router.push('/goods/index/update/'+params.row.id);
+                        }
+                      }
+                    }, '删除');
+                    var info = h('Button', {
+                      props: {
+                        size: 'small',
+                        shape: 'circle'
+                      },
+                      style: {
+                        marginRight: '5px'
+                      },
+                      on: {
+                        click: () => {
+                          this.infoMOdal(params.row.id);
+                          //this.$router.push('/goods/index/update/'+params.row.id);
+                        }
+                      }
+                    }, '查看');
+                    return h('div',[del,info]);
+                  }
+                },
              ],
     }
   },
@@ -181,7 +384,80 @@ export default {
         console.log('error');
       });
     },
-
+    infoMOdal(id){
+      this.infoModal = true;
+      this.getBillInfo(id);
+    },
+    getBillInfo(id){
+      axios.get(URL+'list/' + id,{
+        params:{
+          id:id
+        }
+      })
+        .then(function(res){
+          this.info = res.data.data;
+          if (this.info.addressLine != null){
+            this.info.address = this.info.addressLine;
+          }else if (this.info.addressDetail != null ){
+            this.info.address = this.info.addressDetail;
+          }
+          this.info.deliveryDate = _timestrToDate(this.info.deliveryDate);
+          let invoices = this.info.invoices;
+          var i = new Array();
+          invoices.forEach((value, index,invoices)=>{
+            i.push(value.title);
+          });
+          this.info.invoices = i;
+          let int = this.info.intervalInt;
+          if (int == -1){
+            this.info.intervalInt = '不自动转订单';
+          } else if (int > 1){
+            this.info.intervalInt =  int+'小时后自动转订单';
+          } else if (int == 0){
+            this.info.intervalInt = '立即转订单';
+          }
+          this.info.carts = null;
+        }.bind(this)).catch(function(error){
+          console.log('error');
+      });
+      this.getBillCartInfo(id);
+    },
+    getBillCartInfo(id){
+      axios.get(URL+'list/listcarts/' + id,{
+        params:{
+          id:id
+        }
+      }).then(function(res){
+        this.listcarts = res.data.data;
+        let t = this.listcarts;
+        let total = 0.00;
+        if (this.listcarts != null){
+          for(var i in this.listcarts){
+            total += this.listcarts[i].totoalPrice.amount;
+          }
+        }
+        this.listcarts_totalPrice = total;
+      }.bind(this)).catch(function(error){
+        console.log('error');
+      });
+    },
+    del(id){
+      this.delModal = true;
+      this.delId = id;
+    },
+    dodel(){
+      let id = this.delId;
+      axios.delete(URL+'list/delreclist/' + id,{
+      }).then(function(res){
+        if (res.data.errorCode==200){
+          this.$Message.error('删除成功');
+          this.delModal = false;
+          this.dataInit();
+        }
+      }.bind(this)).catch(function(error){
+        console.log('error');
+      });
+    }
   }
 }
 </script>

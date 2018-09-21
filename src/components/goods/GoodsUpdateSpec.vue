@@ -26,7 +26,8 @@
             <tr>
               <td>名称</td>
               <td>价格</td>
-              <td>价格调整</td>
+              <td>售价</td>
+              <td>进货价</td>
               <td>规格</td>
               <td>库存</td>
               <td>操作</td>
@@ -36,6 +37,9 @@
               <td>{{v.amount}}</td>
               <td>
                 <input type="number" v-model="v.amount">
+              </td>
+              <td>
+                <input type="number" v-model="v.cost">
               </td>
               <td>
                 <span v-for="v1 in v.productOption">{{v1.attributeValue}}</span>
@@ -93,10 +97,62 @@
           @on-cancel="skuModal=false"
           width="1000">
 
-          <table class="table">
+
+        <Row>
+          <Col span="5">
+          <p class="input-text">名称：</p>
+          </Col>
+          <Col span="11">
+          <p class="input-text" style="text-align: left;padding-bottom: 10px"><Input v-model="sku.name"  style="width: 200px"></Input></p>
+          </Col>
+        </Row>
+
+        <Row>
+          <Col span="5">
+          <p class="input-text">售价：</p>
+          </Col>
+          <Col span="11">
+          <p class="input-text" style="text-align: left;padding-bottom: 10px"><InputNumber v-model="sku.price"></InputNumber></p>
+          </Col>
+        </Row>
+
+        <Row>
+          <Col span="5">
+          <p class="input-text">进货价：</p>
+          </Col>
+          <Col span="11">
+          <p class="input-text" style="text-align: left;padding-bottom: 10px"><InputNumber v-model="sku.cost"></InputNumber></p>
+          </Col>
+        </Row>
+
+        <Row v-for="(v,i) in specValues">
+          <Col span="5">
+          <p class="input-text">{{v.attributeName}}</p>
+          </Col>
+          <Col span="11">
+
+          <p class="input-text" style="text-align: left;padding-bottom: 10px">
+            <Select filterable clearable v-model="sku.optionValue[i]" placeholder="请选择" style="width:240px;" >
+              <Option v-for="item in v.allowedValues" :value="item.id" >{{item.attributeValue}}</Option>
+            </Select>
+          </p>
+          </Col>
+        </Row>
+
+        <Row>
+          <Col span="5">
+          <p class="input-text">库存：</p>
+          </Col>
+          <Col span="11">
+          <p class="input-text" style="text-align: left;padding-bottom: 10px"><InputNumber v-model="sku.qtyAvailable"></InputNumber></p>
+          </Col>
+        </Row>
+
+          <!--<table class="table">
             <tr>
               <td>名称</td>
-              <td>价格</td>
+              <td>售价</td>
+              <td>进货价</td>
               <td v-for="(v,i) in specValues">{{v.attributeName}}</td>
               <td>库存</td>
             </tr>
@@ -107,17 +163,36 @@
               <td>
                 <InputNumber v-model="sku.price"></InputNumber>
               </td>
+              <td>
+                <InputNumber v-model="sku.cost"></InputNumber>
+              </td>
               <td v-for="(v,i) in specValues">
-                 <select v-model="sku.optionValue[i]">
-                   <option v-for="item in v.allowedValues" :value="item.id">{{ item.attributeValue }}</option>
-                 </select>
+
+                <Row class="margin-10">
+                  <Col span="10">
+                  <p>
+                    <select filterable clearable v-model="sku.optionValue[i]" style="width:240px;">
+                      <option v-for="item in v.allowedValues" :value="item.id" :key="item.attributeValue">{{ item.attributeValue }}</option>
+                    </select>
+                  </p>
+                  </Col>
+                </Row>
+                <Row class="margin-10">
+                  <Col span="10">
+                  <p>
+                    <Select filterable clearable v-model="sku.optionValue[i]" placeholder="供应商选择" style="width:240px;" >
+                      <Option v-for="item in companyList" :value="item.value" >{{item.label}}</Option>
+                    </Select>
+                  </p>
+                  </Col>
+                </Row>
               </td>
               <td>
                 <InputNumber v-model="sku.qtyAvailable"></InputNumber>
               </td>
             </tr>
           </table>
-
+-->
 
       </Modal>
 
@@ -140,9 +215,12 @@ export default{
 			sku:{
         name:'',
         price:0,
+        cost: 0,
         qtyAvailable:0,
         optionValue:[],
       },
+      a:'',
+      id:'',
       addModal:false,
       skuModal:false,
       specs:[],
@@ -155,6 +233,12 @@ export default{
       categorys:[],
       spin:false,
       specValues:[],
+      current: '',
+      companyList: [],
+      currentCategoryId: '',
+      currentCategoryName: '',
+      currentCompanyId: '',
+      currentCompanyName: '',
 		}
 	},
   computed:{
@@ -186,15 +270,38 @@ export default{
         // 对响应错误做点什么
         return Promise.reject(error);
       });
+    this.currentCategoryId = this.$route.query.currentCategoryId; //当前商品的类目id
+    this.currentCategoryName = this.$route.query.currentCategoryName;//当前商品的类目名称
+    this.currentCompanyId = this.$route.query.currentCompanyId; //当前供应商的id
+    this.currentCompanyName = this.$route.query.currentCompanyName;//当前供应商的名称
 
     this.dataInit();
     this._getCategory();
-
+    this.getCompanyList();
 
   },
 	methods:{
+    getCompanyList(){
+      axios.get(URL+'accountFinance/getSimpleCompanies',{
+        params:{}
+      }).then(function(res){
+        var datas = res.data.data;
+        var list = new Array();
+        datas.forEach(function(v,i,datas){
+          var o = {
+            label: v.companyName + ' ' + v.managerName,
+            value: v.id
+          };
+          list.push(o);
+        });
+        this.companyList = list;
+      }.bind(this)).catch(function(error){
+        console.log(error);
+      })},
     dataInit(){
       var id = this.$route.params.id;
+      this.id = id;
+      this.current = this.$route.query.current;
       axios.get(URL+'product/'+id).then(function(res){
         var data = res.data;
         this.formItem = data.data;
@@ -253,8 +360,8 @@ export default{
       params.append('name', this.sku.name);
       params.append('optionValue', this.sku.optionValue);
       params.append('price', this.sku.price);
+      params.append('cost', this.sku.cost);
       params.append('qtyAvailable', this.sku.qtyAvailable);
-      debugger;
       axios.post(URL+'product/add/'+id,params).then(function(res){
         if(res.data.errorCode!=200){
           this.$Message.error(res.data.moreInfo);
@@ -282,7 +389,7 @@ export default{
       });
     },
     skusave(v){
-      axios.put(URL+'sku/'+v.id+'?price='+v.amount+'&qtyAvailable='+v.quantityAvailable).then(function(res){
+      axios.put(URL+'sku/'+v.id+'?price='+v.amount+'&qtyAvailable='+v.quantityAvailable+'&cost='+v.cost).then(function(res){
         if(res.data.errorCode!=200){
           this.$Message.error(res.data.moreInfo);
         }else{
@@ -307,10 +414,28 @@ export default{
     },
 
     goUpdateSpec(){
-      this.$router.push('/goods/index/updateSpec/'+this.$route.params.id);
+      this.$router.push({
+        path: '/goods/index/updateSpec/'+this.id,
+        query:{
+          current: this.current,
+          currentCategoryId: this.currentCategoryId,
+          currentCategoryName: this.currentCategoryName,
+          currentCompanyId: this.currentCompanyId,
+          currentCompanyName: this.currentCompanyName,
+        },
+      });
     },
     goUpdateBase(){
-      this.$router.push('/goods/index/update/'+this.$route.params.id);
+      this.$router.push({
+        path: '/goods/index/update/'+this.id,
+        query:{
+          current: this.current,
+          currentCategoryId: this.currentCategoryId,
+          currentCategoryName: this.currentCategoryName,
+          currentCompanyId: this.currentCompanyId,
+          currentCompanyName: this.currentCompanyName,
+        },
+      });
     }
 
 	},

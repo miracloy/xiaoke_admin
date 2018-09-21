@@ -92,7 +92,7 @@ export default {
       endTs: '',
       companyName: '',
       total:0,
-      size:10,
+      size:5,
       current:1,
       date: '',
       data1: [],
@@ -125,7 +125,6 @@ export default {
           title: '制单时间',
           key: 'createdAt',
           render:(h,params)=>{
-            var c = params.row.createdAt;
             var m = _timestrToDate(params.row.createdAt);
             return h('div', [
               h('Icon', {
